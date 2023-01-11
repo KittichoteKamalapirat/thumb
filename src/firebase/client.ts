@@ -27,6 +27,7 @@ export const createAndSaveTokens = httpsCallable(
 export const listVideos = httpsCallable(functions, "authAndlistVids");
 export const getAuthURLCall = httpsCallable(functions, "getAuthURLCall");
 export const getVidList = httpsCallable(functions, "getVidList");
+export const googleLogout = httpsCallable(functions, "googleLogout");
 export const updateThumbnail = httpsCallable(functions, "updateThumbnail");
 export const createAndSaveTokensCall = httpsCallable(
   functions,

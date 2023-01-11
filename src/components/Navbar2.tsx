@@ -12,7 +12,7 @@ import { ACTIVE_PAGE_CLASSNAMES, primaryColor } from "../theme";
 import Button, { ButtonTypes } from "./Buttons/Button";
 import { brandName, ICON_SIZE } from "../constants";
 import AuthDisplay from "./AuthDisplay";
-import { getAuthURLCall } from "../firebase/client";
+import { getAuthURLCall, googleLogout } from "../firebase/client";
 import { useContext } from "react";
 import { ChannelContext, emptyChannel } from "../contexts/ChannelContext";
 
@@ -36,8 +36,13 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    const result = await googleLogout(channel.channelId);
     localStorage.clear();
     setChannel(emptyChannel);
+
+    console.log("resultttt", result);
+    // const logoutUrl = urlResolver.googleLogout("http://localhost:5173/");
+    // window.location.replace(logoutUrl);
   };
 
   return (

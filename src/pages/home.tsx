@@ -1,3 +1,4 @@
+import { oauth2 } from "googleapis/build/src/apis/oauth2";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Button from "../components/Buttons/Button";
@@ -51,6 +52,7 @@ const Home = ({}: Props) => {
   };
 
   useEffect(() => {
+    console.log("111111111");
     const codes = location.search.match(CODE_REGEX);
     const code = codes?.[0];
     console.log("code", code);
@@ -59,6 +61,8 @@ const Home = ({}: Props) => {
       console.log("create and save token");
       if (!code) return;
       const result = await createAndSaveTokensCall(code);
+
+      console.log("resultttttt", result);
 
       const { channelId } = result.data as { channelId: string };
 

@@ -15,6 +15,10 @@ class UrlResolver {
     // return `http://localhost:4000/graphql`;
     return config.graphqlSocketEndpoint;
   }
+
+  googleLogout(host: string) {
+    return `https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=${host}`;
+  }
 }
 
 export const urlResolver = new UrlResolver();

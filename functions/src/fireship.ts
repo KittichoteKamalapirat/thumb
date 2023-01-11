@@ -298,3 +298,17 @@ export const getAuthURLCall = functions.https.onCall(async (req, res) => {
 
   return url;
 });
+
+export const googleLogout = functions.https.onCall(
+  async (channelId: string) => {
+    const tokens = (
+      await admin.firestore().doc(tokensPath(channelId)).get()
+    ).data() as admin.firestore.DocumentData;
+
+    console.log("tokens", tokens);
+    oauth2Client.revokeToken(tokens.refresh_token);
+    // oauth2Client.revokeCredentials();
+
+    return true;
+  }
+);
