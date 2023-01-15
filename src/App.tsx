@@ -5,7 +5,10 @@ import {
   ChannelContext,
   emptyChannel,
 } from "./contexts/ChannelContext";
-import Home from "./pages/home";
+import CreateTest from "./pages/create-test";
+import Home from "./pages/create-test";
+import Testing from "./pages/testing";
+import Testings from "./pages/testings";
 
 function App() {
   const [channel, setChannel] = useState<Channel>(emptyChannel);
@@ -20,7 +23,9 @@ function App() {
       <ChannelContext.Provider value={{ channel, setChannel }}>
         <BrowserRouter>
           <Routes>
-            <Route index path="/" element={<Home />} />
+            <Route index path="/" element={<Testings />} />
+            <Route index path="/create-test" element={<CreateTest />} />
+            <Route index path="/" element={<Testing />} />
           </Routes>
         </BrowserRouter>
       </ChannelContext.Provider>

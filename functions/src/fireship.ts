@@ -1,8 +1,10 @@
-import * as functions from "firebase-functions";
-import { google } from "googleapis";
-import * as admin from "firebase-admin";
+/* eslint-disable max-len */
 import axios from "axios";
+import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 import * as fs from "fs";
+import { google } from "googleapis";
+import { formatDate } from "./utils/formatDate";
 
 admin.initializeApp();
 
@@ -80,21 +82,29 @@ const genArrbufFromUrl = async ({
   // process aud
   const res = await axios.get(url, { responseType: "arraybuffer" });
   const buffer = Buffer.from(res.data, "binary");
-  const localPath = `${__dirname}/../../../tmp/${filename}.${type}`;
+  const localPath = `${__dirname}/../tmp/${filename}.${type}`;
   fs.writeFileSync(localPath, buffer);
 
   return { localPath };
 };
 
 export const updateThumbnail = functions.https.onCall(
-  async ({ videoId, thumbUrl }: { videoId: string; thumbUrl: string }) => {
+  async ({
+    videoId,
+    thumbUrl,
+    channelId,
+  }: {
+    videoId: string;
+    thumbUrl: string;
+    channelId: string;
+  }) => {
+    console.log("updateeeee", videoId, thumbUrl);
     const { localPath } = await genArrbufFromUrl({
       url: thumbUrl,
       filename: "name",
       type: "jpg",
     });
     // Get refresh_token from DB
-    const channelId = (await getChannelId()) as string;
     const tokens = (
       await admin.firestore().doc(tokensPath(channelId)).get()
     ).data() as admin.firestore.DocumentData;
@@ -115,6 +125,79 @@ export const updateThumbnail = functions.https.onCall(
     });
 
     return true;
+  }
+);
+
+interface StatProps {
+  channelId: string;
+  videoIds: string[];
+}
+export const getStats = functions.https.onCall(
+  async ({ channelId, videoIds }: StatProps) => {
+    try {
+      // Get refresh_token from DB
+
+      const tokens = (
+        await admin.firestore().doc(tokensPath(channelId)).get()
+      ).data() as admin.firestore.DocumentData;
+
+      console.log("tokens", tokens);
+      oauth2Client.setCredentials(tokens);
+
+      console.log("1");
+
+      const analytics = google.youtubeAnalytics({
+        version: "v2",
+        auth: oauth2Client,
+      });
+      console.log("2");
+
+      // const metrics =
+      //   "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained";
+
+      const metrics =
+        "views,annotationClickThroughRate,annotationCloseRate,averageViewDuration,comments,dislikes,estimatedMinutesWatched,likes,shares,subscribersGained,subscribersLost";
+
+      const videosStr = videoIds.join(","); // "video==elmrkjxUBYw,zRKfWdvD4eo"
+      console.log("3");
+      console.log("videos", videosStr);
+      // Get video
+      // const data = await analytics.reports.query({
+      //   metrics,
+      // });
+      const today = new Date();
+      const todayStr = formatDate(today);
+
+      const startDate = new Date("2000-01-01");
+      const startStr = formatDate(startDate);
+
+      console.log("today", todayStr);
+      console.log("startStr", startStr);
+      const data = await analytics.reports.query({
+        dimensions: "video",
+        filters: `video==${videosStr}`,
+        ids: "channel==MINE",
+        metrics,
+        endDate: todayStr,
+        startDate: startStr,
+      });
+
+      console.log("4");
+      console.log("data", data);
+      const results = data && data.data && data.data.rows ? data.data.rows : [];
+      const keys = ["videoId", ...metrics.split(",")];
+
+      const response = results.map((item: string[]) => {
+        const temp: Record<string, string> = {};
+        for (let i = 0; i < keys.length; i++) temp[keys[i]] = item[i];
+        return temp;
+      });
+      console.log("response", response);
+      return response;
+    } catch (error) {
+      console.log("error getting stats", error);
+      return;
+    }
   }
 );
 
@@ -289,6 +372,8 @@ export const getAuthURLCall = functions.https.onCall(async (req, res) => {
     "profile",
     "email",
     "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly",
   ];
 
   const url = oauth2Client.generateAuthUrl({
