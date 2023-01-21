@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { google } from "googleapis";
-import { formatDate } from "../../src/utils/formatDate";
+import { formatDate } from "./utils/formatDate";
 
 admin.initializeApp();
 
@@ -12,6 +12,8 @@ admin.initializeApp();
 // const { video_id } = functions.config().data;
 const video_id = "xxx";
 
+const secretFileName = "client_secret.json";
+const SECRET_PATH = `${__dirname}/../${secretFileName}`;
 const tokensPath = (channelId: string) => `channels/${channelId}/tokens/token`;
 
 const oauth2Client = new google.auth.OAuth2(
@@ -319,11 +321,8 @@ const getChannelId = async () => {
 };
 
 // OAuth Code
-export const createAndSaveTokensCall = functions
-  .runWith({
-    allowInvalidAppCheckToken: false,
-  })
-  .https.onCall(async (code: string) => {
+export const createAndSaveTokensCall = functions.https // }) //   allowInvalidAppCheckToken: false, // .runWith({
+  .onCall(async (code: string) => {
     try {
       console.log("codeeeee 1", code);
       const { tokens } = await oauth2Client.getToken(code);
@@ -395,5 +394,22 @@ export const googleLogout = functions.https.onCall(
     // oauth2Client.revokeCredentials();
 
     return true;
+  }
+);
+
+export const getOAuth2Client = async () => {
+  const content = await fs.readFileSync(SECRET_PATH, "utf8");
+  const credentials = JSON.parse(String(content));
+  const clientSecret = credentials.web.client_secret;
+  const clientId = credentials.web.client_id;
+  const redirectUrl = credentials.web.redirect_uris[0];
+
+  return new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+};
+
+export const getOAuth2ClientRequest = functions.https.onRequest(
+  async (req, res) => {
+    const client = await getOAuth2Client();
+    res.send(client);
   }
 );
