@@ -4,16 +4,34 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { google } from "googleapis";
-import { getOAuth2Client } from "./getOAuth2Client";
 import { formatDate } from "./utils/formatDate";
 
 admin.initializeApp();
+
+export const getOAuth2Client = async () => {
+  const content = await fs.readFileSync(SECRET_PATH, "utf8");
+  const credentials = JSON.parse(String(content));
+  const clientSecret = credentials.web.client_secret;
+  const clientId = credentials.web.client_id;
+  const redirectUrl = credentials.web.redirect_uris[0];
+
+  return new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+};
 
 // const { client, secret, redirect } = functions.config().oauth;
 // const { video_id } = functions.config().data;
 const video_id = "xxx";
 
+const secretFileName = "client_secret.json";
+const SECRET_PATH = `${__dirname}/../${secretFileName}`;
 const tokensPath = (channelId: string) => `channels/${channelId}/tokens/token`;
+
+// const oauth2Client = new google.auth.OAuth2(
+//   "720790956280-ou5iv375lrglgjsdaus81tp6but4cd6c.apps.googleusercontent.com",
+//   "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",
+//   "http://localhost:5173/"
+
+// );
 
 const oauth2Client = getOAuth2Client();
 
