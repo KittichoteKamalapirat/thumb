@@ -35,7 +35,7 @@ interface Props {
   isSearchable?: boolean;
   label?: string;
   labelClass?: string;
-  labelFontColour?: string;
+  labelFontColor?: string;
   name?: string;
   options?: SelectOption[];
   placeholder?: string;
@@ -73,7 +73,7 @@ const SelectField = ({
   isDisabled = false,
   optionalLabelStyle = "",
   defaultValue,
-  labelFontColour,
+  labelFontColor,
   testId = "",
   noOptionsMessage = "No Options",
 }: Props) => {
@@ -81,7 +81,7 @@ const SelectField = ({
     <div className={className}>
       <FormFieldLabel
         label={label}
-        fontColour={labelFontColour}
+        fontColor={labelFontColor}
         extraClass={labelClass}
         displayOptionalLabel={!required}
         optionalLabelStyle={optionalLabelStyle}

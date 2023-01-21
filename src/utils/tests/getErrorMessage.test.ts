@@ -1,4 +1,4 @@
-import getErrorMessage from "../getErrorMessage";
+import { getErrorMessage } from "../getErrorMessage";
 
 describe("getErrorMessage", () => {
   test("should return null with no error", () => {

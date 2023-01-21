@@ -16,7 +16,7 @@ describe("SubHeading", () => {
     render(
       <SubHeading
         heading={heading}
-        fontColor="colour"
+        fontColor="color"
         fontSize="size"
         fontStyle="style"
         extraClass="class"
@@ -25,6 +25,6 @@ describe("SubHeading", () => {
 
     const headingElement = screen.getByRole("heading", { name: heading });
     expect(headingElement).toBeInTheDocument();
-    expect(headingElement).toHaveClass("colour size style class");
+    expect(headingElement).toHaveClass("color size style class");
   });
 });

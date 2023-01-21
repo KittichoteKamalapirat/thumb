@@ -1,23 +1,14 @@
-import { User } from "firebase/auth";
-import { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useContext, useState } from "react";
+import { ChannelContext } from "../contexts/ChannelContext";
 import { logout } from "../firebase/auth";
-import { auth } from "../firebase/client";
-import usePremiumStatus from "../hooks/usePremiumStatus";
 // import { createCheckoutSession } from "../stripe/createCheckoutSession";
-import Button, { ButtonTypes } from "./Buttons/Button";
 import Dropdown from "./Dropdown";
-import LoginModal from "./LoginModal";
-import Tag from "./Tag";
-
-import SmallHeading from "./typography/SmallHeading";
 
 interface Props {}
 
 const AuthDisplay = ({}: Props) => {
-  const [user, userLoading] = useAuthState(auth);
+  const { channel, setChannel } = useContext(ChannelContext);
 
-  const userIsPremium = usePremiumStatus(user as User);
   const [premiumButtonIsLoading, setPremiumButtonIsLoading] = useState(false);
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
@@ -25,23 +16,22 @@ const AuthDisplay = ({}: Props) => {
   const toggleModal = () => setModalIsOpen(!modalIsOpen);
 
   const handleSubscribe = async () => {
-    if (!user) return;
+    if (!channel.channelId) return;
     setPremiumButtonIsLoading(true);
     // await createCheckoutSession(user.uid); // TODO
     setPremiumButtonIsLoading(false);
     return;
   };
   // loading
-  if (!user && userLoading) return <h1>Loading...</h1>;
 
   // no user
-  if (!user && !userLoading) return <div>no user</div>;
+  if (!channel.channelId) return <div>no user</div>;
 
   return (
     <div>
-      {user && !userLoading && (
+      {!channel.channelId && (
         <div className="flex items-center">
-          {!userIsPremium ? (
+          {/* {!userIsPremium ? (
             <Button
               type={ButtonTypes.ACTION}
               fontSize="text-md"
@@ -51,7 +41,7 @@ const AuthDisplay = ({}: Props) => {
             />
           ) : (
             <Tag content="🍪 Premium" extraClass="ml-auto" />
-          )}
+          )} */}
           <Dropdown
             isOpen={modalIsOpen}
             onClick={() => setModalIsOpen(!modalIsOpen)}
@@ -75,10 +65,7 @@ const AuthDisplay = ({}: Props) => {
               },
             ]}
           >
-            <SmallHeading
-              fontSize="text-md"
-              heading={`Hi, ${user.email?.split("@")[0]}`}
-            />
+            Dropdown
           </Dropdown>
         </div>
       )}

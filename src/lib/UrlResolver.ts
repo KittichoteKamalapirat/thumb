@@ -1,19 +1,22 @@
-import { config } from "../constants";
-
 class UrlResolver {
   index() {
     return "/"; //http://localhost:3000
   }
 
-  // API
-  graphql() {
-    return config.graphqlHttpEndpoint;
+  home() {
+    return "/";
   }
 
-  graphqlSocket() {
-    // return `ws://192.168.1.66:4001/graphql`;
-    // return `http://localhost:4000/graphql`;
-    return config.graphqlSocketEndpoint;
+  myTests() {
+    return "/tests";
+  }
+
+  createTest() {
+    return "/create-test";
+  }
+
+  myAccount() {
+    return "/account";
   }
 
   googleLogout(host: string) {

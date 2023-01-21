@@ -7,7 +7,7 @@ import {
   RefCallBack,
   RegisterOptions,
 } from "react-hook-form";
-import { getErrorMessage } from "../../../../functions/src/utils";
+import { getErrorMessage } from "../../../utils/getErrorMessage";
 
 import FormFieldLabel from "../FormFieldLabel";
 import FormHelperText from "../FormHelperText";
@@ -38,7 +38,7 @@ interface Props {
   isError?: boolean;
   label?: string;
   labelClass?: string;
-  labelFontColour?: string;
+  labelFontColor?: string;
   name?: string;
   placeholder?: string;
   required?: boolean;
@@ -120,7 +120,7 @@ const TextField = ({
   isError: isInputError = false,
   label = "",
   labelClass = "mb-2",
-  labelFontColour = "text-grey-420",
+  labelFontColor = "text-grey-420",
   name = "",
   placeholder = "",
   required = false,
@@ -213,7 +213,7 @@ const TextField = ({
       <FormFieldLabel
         label={label}
         extraClass={`${labelClass} ${labelBaseClass}`}
-        fontColour={labelFontColour}
+        fontColor={labelFontColor}
         displayOptionalLabel={!required}
         optionalLabelStyle={optionalLabelStyle}
       />

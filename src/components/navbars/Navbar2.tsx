@@ -1,20 +1,17 @@
-import { FiLogOut } from "react-icons/fi";
 import { AiFillHome, AiFillSetting } from "react-icons/ai";
-import { BsInboxesFill } from "react-icons/bs";
-import { GiWaterRecycling } from "react-icons/gi";
+import { FiLogOut } from "react-icons/fi";
 
 import classNames from "classnames";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { urlResolver } from "../lib/UrlResolver";
+import { urlResolver } from "../../lib/UrlResolver";
 
-import { ACTIVE_PAGE_CLASSNAMES, primaryColor } from "../theme";
-import Button, { ButtonTypes } from "./Buttons/Button";
-import { brandName, ICON_SIZE } from "../constants";
-import AuthDisplay from "./AuthDisplay";
-import { getAuthURLCall, googleLogout } from "../firebase/client";
 import { useContext } from "react";
-import { ChannelContext, emptyChannel } from "../contexts/ChannelContext";
+import { brandName, ICON_SIZE } from "../../constants";
+import { ChannelContext, emptyChannel } from "../../contexts/ChannelContext";
+import { getAuthURLCall, googleLogout } from "../../firebase/client";
+import { ACTIVE_PAGE_CLASSNAMES, primaryColor } from "../../theme";
+import Button, { ButtonTypes } from "../Buttons/Button";
 
 enum PATH_ENUM {
   ACTIVITIES = "/activities",
@@ -47,7 +44,6 @@ const Navbar = () => {
 
   return (
     <nav className="flex flex-col xl:flex-row z-100 bg-grey-0 container px-2 xl:px-10 py-2 justify-between items-center mx-auto top-0">
-      <AuthDisplay />
       <a href={urlResolver.index()} className="mt-4 flex items-center">
         <img src="/logo.svg" className="mr-3 h-8" alt={`${brandName} logo`} />
         {/* <span className="self-center text-xl font-semibold whitespace-nowrap hover:underline">

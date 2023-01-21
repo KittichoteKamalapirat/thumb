@@ -2,7 +2,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/theme": ["src/theme"],
       "@/components/*": ["src/components/*"],
       "@/firebase/*": ["src/firebase/*"],
       "@/stripe/*": ["src/stripe/*"]
@@ -23,6 +22,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

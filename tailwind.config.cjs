@@ -124,6 +124,7 @@ module.exports = {
           900: primaryColor900,
           primary: primaryColor,
           hovered: primaryHoveredColor,
+          DEFAULT: primaryColor,
         },
         red: {
           50: "#FFF5F5",

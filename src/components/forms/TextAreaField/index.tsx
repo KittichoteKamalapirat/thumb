@@ -24,7 +24,7 @@ interface Props {
   isError?: boolean;
   label?: string;
   labelClass?: string;
-  labelFontColour?: string;
+  labelFontColor?: string;
   optionalLabelStyle?: string;
   name?: string;
   onBlur?: ChangeHandler;
@@ -101,7 +101,7 @@ const TextAreaField = forwardRef(
       isError: isInputError = false,
       label = "",
       ariaLabel = "",
-      labelFontColour = "text-grey-420",
+      labelFontColor = "text-grey-420",
       optionalLabelStyle = "",
       labelClass = "mb-2",
       name = "",
@@ -149,7 +149,7 @@ const TextAreaField = forwardRef(
           label={label}
           ariaLabel={ariaLabel}
           extraClass={`${labelClass} ${labelBaseClass}`}
-          fontColour={labelFontColour}
+          fontColor={labelFontColor}
           displayOptionalLabel={!required}
           optionalLabelStyle={optionalLabelStyle}
         />

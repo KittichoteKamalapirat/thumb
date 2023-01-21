@@ -26,7 +26,7 @@ interface Props {
   extraClass: string;
   buttonType?: HTMLButtonType;
   disabled: boolean;
-  borderColour: string;
+  borderColor: string;
   borderRadius: string;
   borderWidth: string;
   fontSize: string;
@@ -43,7 +43,7 @@ interface ClassProps {
   fontSize: string;
   extraClass: string;
   height: string;
-  borderColour: string;
+  borderColor: string;
   borderRadius: string;
   borderWidth: string;
   fontColor: string;
@@ -54,7 +54,7 @@ const useClassName = ({
   disabled,
   spacing,
   borderRadius,
-  borderColour,
+  borderColor,
   borderWidth,
   fontSize,
   fontColor,
@@ -64,7 +64,7 @@ const useClassName = ({
   const commonClass = `no-underline px-4 rounded-md ${fontSize} ${height} ${spacing} ${borderRadius} ${extraClass} ${
     disabled ? "opacity-50 cursor-not-allowed" : ""
   }`;
-  const borderClass = `${borderColour} ${borderWidth}`;
+  const borderClass = `${borderColor} ${borderWidth}`;
 
   switch (type) {
     case ButtonTypes.OUTLINED:
@@ -97,7 +97,7 @@ const Button = ({
   disabled,
   height,
   fontSize,
-  borderColour,
+  borderColor,
   borderRadius,
   borderWidth,
   startIcon,
@@ -112,7 +112,7 @@ const Button = ({
     fontSize,
     extraClass,
     height,
-    borderColour,
+    borderColor,
     borderRadius,
     borderWidth,
     fontColor,
@@ -148,7 +148,7 @@ Button.defaultProps = {
   buttonType: HTMLButtonType.BUTTON,
   disabled: false,
   borderRadius: "rounded-5px",
-  borderColour: "border-primary-primary",
+  borderColor: "border-primary-primary",
   borderWidth: "border",
   fontSize: "text-13px",
   fontColor: "text-primary-primary",

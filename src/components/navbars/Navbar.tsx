@@ -1,8 +1,7 @@
-import { Suspense } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { Suspense, useContext } from "react";
 import { brandName } from "../constants";
+import { ChannelContext } from "../contexts/ChannelContext";
 
-import { auth } from "../firebase/client";
 import AuthDisplay from "./AuthDisplay";
 
 import { ButtonTypes } from "./Buttons/Button";
@@ -12,7 +11,7 @@ import { Loading } from "./skeletons/Loading";
 interface Props {}
 
 const Navbar = ({}: Props) => {
-  const [user, userLoading] = useAuthState(auth);
+  const { channel } = useContext(ChannelContext);
 
   return (
     <div className="flex justify-center py-2 px-10 w-full top-0 fixed bg-primary-primary text-grey-0 z-50">
@@ -29,7 +28,7 @@ const Navbar = ({}: Props) => {
         <div>
           <ul className="flex gap-4">
             {/* <Link>Contact</Link> */}
-            {!user?.displayName ? (
+            {!channel ? (
               <LinkButton
                 href="/pricing"
                 type={ButtonTypes.TEXT}

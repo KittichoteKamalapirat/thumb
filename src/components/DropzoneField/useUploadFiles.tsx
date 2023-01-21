@@ -59,8 +59,9 @@ const useUploadFiles = ({
           setUploadError(`There was an error with your ${file.name} upload`);
         }
 
+        console.log("savedFiles", savedFiles);
         // can only upload one file
-        if (savedFiles.length === 1 && !isMultiple) {
+        if (savedFiles.length > 1 && !isMultiple) {
           setUploadError(
             "Only 1 image can be uploaded. If you wish to change the image, please delete the current one first."
           );

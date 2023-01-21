@@ -3,7 +3,7 @@ interface Props {
   ariaLabel?: string;
   fontSize: string;
   fontStyle: string;
-  fontColour: string;
+  fontColor: string;
   extraClass: string;
   displayOptionalLabel: boolean;
   optionalLabelStyle?: string;
@@ -15,7 +15,7 @@ const FormFieldLabel = ({
   fontSize,
   ariaLabel,
   fontStyle,
-  fontColour,
+  fontColor,
   extraClass,
   displayOptionalLabel,
   optionalLabelStyle = "",
@@ -26,7 +26,7 @@ const FormFieldLabel = ({
       <label
         aria-label={ariaLabel || label}
         htmlFor={htmlFor || label}
-        className={`inline-block ${fontSize} ${fontStyle} ${fontColour} ${extraClass} `}
+        className={`inline-block ${fontSize} ${fontStyle} ${fontColor} ${extraClass} `}
       >
         {label}
         {displayOptionalLabel && (
@@ -47,7 +47,7 @@ FormFieldLabel.defaultProps = {
   label: "",
   fontSize: "text-11px",
   fontStyle: "font-nunito",
-  fontColour: "text-grey-420",
+  fontColor: "text-grey-420",
   extraClass: "mb-2",
   displayOptionalLabel: false,
 };

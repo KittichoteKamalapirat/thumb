@@ -16,7 +16,7 @@ describe("SmallHeading", () => {
     render(
       <SmallHeading
         heading={heading}
-        fontColor="colour"
+        fontColor="color"
         fontSize="size"
         fontStyle="style"
       />
@@ -24,6 +24,6 @@ describe("SmallHeading", () => {
 
     const headingElement = screen.getByRole("heading", { name: heading });
     expect(headingElement).toBeInTheDocument();
-    expect(headingElement).toHaveClass("colour size style");
+    expect(headingElement).toHaveClass("color size style");
   });
 });

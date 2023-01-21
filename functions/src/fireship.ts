@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { google } from "googleapis";
-import { formatDate } from "./utils/formatDate";
+import { formatDate } from "../../src/utils/formatDate";
 
 admin.initializeApp();
 

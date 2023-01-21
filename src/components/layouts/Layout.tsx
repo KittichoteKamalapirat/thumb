@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import Container from "../containers/Container";
 import { Footer } from "../Footer";
-import Navbar from "../Navbar2";
+import LoggedInNav from "../navbars/LoggedInNav";
+import Navbar from "../navbars/Navbar2";
 
 interface Props {
   children: ReactNode;
@@ -29,7 +30,7 @@ const Layout = ({
 }: Props) => {
   return (
     <div>
-      <Navbar />
+      <LoggedInNav />
       <div className="bg-grey-0 text-grey-900 h-min-screen ">
         <main
           className={`flex-1 h-full w-full ${justifyContent} ${alignItems} ${extraStyle} `}
