@@ -50,18 +50,15 @@ export const spaceXL = "1.5rem";
 export const space2XL = "2rem";
 export const space3XL = "4rem";
 
-export const CARD_CLASSNAMES =
-  "border-solid rounded-md border-2 border-grey-50 p-6 shadow-md my-4";
+export const CARD_CLASSNAMES = "rounded-md border p-6 shadow-md my-4";
 
-export const UNCLICKABLE_CARD_CLASSNAMES = classNames(
-  CARD_CLASSNAMES,
-  "hover:cursor-default"
-);
-
-export const BORDER_CLASSNAMES =
-  "border-solid rounded-md border-2 border-grey-50 p-6 shadow-md my-4";
-
+export const BORDER_CLASSNAMES = "rounded-md border p-6 shadow-md my-4";
 export const ACTIVE_PAGE_CLASSNAMES =
-  "text-primary-primary font-bold border-solid border-b-2 border-primary-primary rounded-t-md";
+  "text-primary-primary font-bold border-b-2 border-primary-primary rounded-t-md";
+export const ACTION_CARD_CLASSNAMES = `rounded-md border p-2 shadow-md hover:bg-primary-50 hover:cursor-pointer`;
 
-export const ACTION_CARD_CLASSNAMES = `${CARD_CLASSNAMES} hover:bg-primary-50 hover:cursor-pointer`;
+export const ACTIVE_CARD_CLASSNAMES =
+  "rounded-md border border-primary-primary p-2 bg-primary-50";
+
+export const ACTION_ACTIVE_CARD_CLASSNAMES =
+  "rounded-md border border-primary-primary p-2 bg-primary-50 hover:cursor-pointer hover:bg";

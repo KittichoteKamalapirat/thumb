@@ -6,7 +6,6 @@ import {
   emptyChannel,
 } from "./contexts/ChannelContext";
 import CreateTest from "./pages/create-test";
-import Home from "./pages/create-test";
 import Testing from "./pages/testing";
 import Testings from "./pages/testings";
 

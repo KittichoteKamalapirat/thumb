@@ -1,4 +1,4 @@
-export const formatDate = (d: Date) => {
+const formatDate = (d: Date) => {
   const currDate = d.getDate();
   const currMonth = d.getMonth() + 1; // Months are zero based
   const currYear = d.getFullYear();
@@ -11,3 +11,5 @@ export const formatDate = (d: Date) => {
   const formatted = currYear + "-" + twoDigitMonth + "-" + twoDigitDate;
   return formatted;
 };
+
+export default formatDate;

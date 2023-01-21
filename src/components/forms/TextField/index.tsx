@@ -7,10 +7,11 @@ import {
   RefCallBack,
   RegisterOptions,
 } from "react-hook-form";
-import { InputType } from "../../../constants/inputType";
-import getErrorMessage from "../../../utils/getErrorMessage";
+import { getErrorMessage } from "../../../../functions/src/utils";
+
 import FormFieldLabel from "../FormFieldLabel";
 import FormHelperText from "../FormHelperText";
+import { InputType } from "./inputType";
 import styles from "./Textfield.module.css";
 export type { ChangeHandler } from "react-hook-form";
 
@@ -173,7 +174,18 @@ const TextField = ({
               type={inputType}
               value={value || reactHookFormValue}
               disabled={disabled}
-              onChange={onChange || onReactHookFormChange}
+              onChange={(e) => {
+                if (onChange) {
+                  onChange(e);
+                } else if (onReactHookFormChange) {
+                  if (inputType === "number") {
+                    onReactHookFormChange(parseInt(e.target.value));
+                  } else {
+                    onReactHookFormChange(e.target.value);
+                  }
+                }
+              }}
+              // onChange={onChange || onReactHookFormChange}
               onBlur={onBlur || onReactHookFormBlur}
               onInput={onInput}
               onKeyDown={(e) => {
