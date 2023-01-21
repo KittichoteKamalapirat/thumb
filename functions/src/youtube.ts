@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { google } from "googleapis";
 import * as readline from "readline";
+import { getOAuth2Client } from "./getOAuth2Client";
 
 const secretFileName = "client_secret.json";
 const tokenFileName = "client_oauth_token.json";
@@ -15,12 +16,7 @@ const scope = ["https://www.googleapis.com/auth/youtube.upload"];
 
 export const authAndlistVids = functions.https.onCall(
   async (accessToken: string) => {
-    const oauth2Client = new google.auth.OAuth2(
-      // eslint-disable-next-line max-len
-      "720790956280-ou5iv375lrglgjsdaus81tp6but4cd6c.apps.googleusercontent.com",
-      "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",
-      "http://localhost:5173/"
-    );
+    const oauth2Client = getOAuth2Client();
 
     // const scopes = ["https://www.googleapis.com/auth/youtube.upload"];
 
