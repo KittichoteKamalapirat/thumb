@@ -1,7 +1,5 @@
 import { AiFillHome } from "react-icons/ai";
-
 import { useLocation } from "react-router-dom";
-
 import { urlResolver } from "../../lib/UrlResolver";
 import classNames from "classnames";
 import { brandName, ICON_SIZE } from "../../constants";

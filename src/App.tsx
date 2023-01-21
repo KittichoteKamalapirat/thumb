@@ -6,6 +6,7 @@ import {
   emptyChannel,
 } from "./contexts/ChannelContext";
 import { urlResolver } from "./lib/UrlResolver";
+import MyAccount from "./pages/account";
 import CreateTest from "./pages/create-test";
 import Home from "./pages/home";
 import Testing from "./pages/testing";
@@ -36,6 +37,7 @@ function App() {
               }
             />
             <Route path="/tests" element={<Testings />} />
+            <Route path="/account" element={<MyAccount />} />
             <Route index path="/create-test" element={<CreateTest />} />
             <Route index path="/" element={<Testing />} />
           </Routes>

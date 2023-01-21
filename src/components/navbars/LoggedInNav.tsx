@@ -1,10 +1,7 @@
 import { AiFillHome } from "react-icons/ai";
 import { MdAccountCircle } from "react-icons/md";
-
 import { useLocation } from "react-router-dom";
-
 import { urlResolver } from "../../lib/UrlResolver";
-
 import { TbTestPipe } from "react-icons/tb";
 import { brandName, ICON_SIZE } from "../../constants";
 import { primaryColor } from "../../theme";
