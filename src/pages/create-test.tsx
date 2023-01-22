@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import { Control, FieldError, useForm } from "react-hook-form";
 import { AiOutlineShop, AiOutlineHome } from "react-icons/ai";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button, {
   ButtonTypes,
   HTMLButtonType,
@@ -25,7 +25,10 @@ import {
   getVidList,
   updateThumbnail,
 } from "../firebase/client";
-import { createTesting } from "../firebase/createTesting";
+import {
+  createTesting,
+  CreateThumbnailTestingInput,
+} from "../firebase/createTesting";
 import { DurationType, TestingType } from "../firebase/types/Testing.type";
 import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
@@ -33,6 +36,7 @@ import {
   primaryColor,
 } from "../theme";
 import { ICON_SIZE } from "../constants";
+import { urlResolver } from "../lib/UrlResolver";
 
 interface Props {}
 
@@ -115,6 +119,7 @@ const CreateTest = ({}: Props) => {
     console.log("list ends");
   };
 
+  const navigate = useNavigate();
   const handleUpload = async () => {
     updateThumbnail({
       videoId: selectedUpload?.videoId,
@@ -125,11 +130,23 @@ const CreateTest = ({}: Props) => {
 
   const onSubmit = async (input: FormValues) => {
     console.log("input", input);
+    const originalThumbUrl = uploads?.find(
+      (upload) => upload.videoId === input[FormNames.VIDEO_ID]
+    )?.thumbnailUrl as string;
+
+    const dbInput: CreateThumbnailTestingInput = {
+      originalThumbUrl, // todo what if testing title
+      variationThumbUrl: fileUploads[0].url,
+      ...input,
+    };
+
     try {
       console.log("......");
-      const result = await createTesting(channelId, input);
-      if (result) console.log(".......success!!!");
-      else console.log("......cannot create ");
+      const docId = await createTesting(channelId, dbInput);
+      if (docId) {
+        console.log(".......success!!!", docId);
+        navigate(urlResolver.myTest(docId));
+      } else console.log("......cannot create ");
     } catch (error) {
       console.log("error inside  catch", error);
       console.log("......error creating");
@@ -309,7 +326,7 @@ const CreateTest = ({}: Props) => {
                   {/* Select duration ends */}
 
                   <TextField
-                    required={durationTypeWatch === "specific"} // no need to check whether specific since it's not mounted anyway
+                    required={durationTypeWatch === "specific"}
                     name={FormNames.DURATION}
                     control={control as unknown as Control}
                     containerClass="w-full sm:w-80"
@@ -319,16 +336,20 @@ const CreateTest = ({}: Props) => {
                     extraClass="w-full"
                     labelClass="mt-4"
                     error={errors[FormNames.DURATION]}
-                    validation={{
-                      min: {
-                        value: 1,
-                        message: "cannot be 0",
-                      },
-                      max: {
-                        value: 100,
-                        message: "has to be less than 101",
-                      },
-                    }}
+                    validation={
+                      durationTypeWatch === "specific"
+                        ? {
+                            min: {
+                              value: 1,
+                              message: "cannot be 0",
+                            },
+                            max: {
+                              value: 100,
+                              message: "has to be less than 101",
+                            },
+                          }
+                        : {}
+                    }
                   />
                   <p>
                     Final results will be available on Thursday, December 2,

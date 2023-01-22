@@ -1,4 +1,5 @@
 class UrlResolver {
+  host() {}
   index() {
     return "/"; //http://localhost:3000
   }
@@ -9,6 +10,10 @@ class UrlResolver {
 
   myTests() {
     return "/tests";
+  }
+
+  myTest(id: string) {
+    return `/tests/${id}`;
   }
 
   createTest() {

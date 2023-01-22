@@ -13,6 +13,7 @@ admin.initializeApp();
 // const { video_id } = functions.config().data;
 const video_id = "xxx";
 
+const secretFileName = "client_secret.json";
 const tokensPath = (channelId: string) => `channels/${channelId}/tokens/token`;
 
 const oauth2Client = getOAuth2Client();

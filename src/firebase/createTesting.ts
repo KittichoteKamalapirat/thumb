@@ -1,17 +1,24 @@
-import { v4 as uuidv4 } from "uuid";
 import dayjs from "dayjs";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 import { FormValues } from "../pages/create-test";
 import { firestore } from "./client";
-import { Testing } from "./types/Testing.type";
+import { DurationType, Testing } from "./types/Testing.type";
 
+export interface CreateThumbnailTestingInput {
+  videoId: string;
+  durationType: DurationType;
+  duration: number;
+  originalThumbUrl: string;
+  variationThumbUrl: string;
+}
 export const createTesting = async (
   channelId: string,
   form: FormValues
-): Promise<boolean> => {
+): Promise<string> => {
   const id = uuidv4();
 
-  const docRef = doc(firestore, "channels", channelId, "testings");
+  const docRef = doc(firestore, "channels", channelId, "testings", id);
 
   try {
     const unixDate = dayjs().valueOf();
@@ -29,9 +36,9 @@ export const createTesting = async (
     // await addDoc(colRef, input);
     await setDoc(docRef, input);
 
-    return true;
+    return id;
   } catch (error) {
     console.log("error inside create testing", error);
-    return false;
+    return "";
   }
 };

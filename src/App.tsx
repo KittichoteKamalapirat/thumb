@@ -37,9 +37,9 @@ function App() {
               }
             />
             <Route path="/tests" element={<Testings />} />
+            <Route path="/tests/:id" element={<Testing />} />
             <Route path="/account" element={<MyAccount />} />
             <Route index path="/create-test" element={<CreateTest />} />
-            <Route index path="/" element={<Testing />} />
           </Routes>
         </BrowserRouter>
       </ChannelContext.Provider>
