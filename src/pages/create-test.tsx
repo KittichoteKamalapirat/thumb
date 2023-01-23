@@ -1,16 +1,9 @@
-import { AiOutlineCloudUpload } from "react-icons/ai";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import { Control, FieldError, useForm } from "react-hook-form";
-import { AiOutlineShop, AiOutlineHome } from "react-icons/ai";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Button, {
-  ButtonTypes,
-  HTMLButtonType,
-} from "../components/Buttons/Button";
+import Button, { HTMLButtonType } from "../components/Buttons/Button";
 import DropzoneField, { UploadedFile } from "../components/DropzoneField";
-import CardCheckboxField from "../components/forms/CheckboxField/CardCheckboxField";
-import RadioField from "../components/forms/RadioField";
 import CardRadioField from "../components/forms/RadioField/CardRadioField";
 
 import TextField, { TextFieldTypes } from "../components/forms/TextField";
@@ -21,7 +14,6 @@ import SubHeading from "../components/typography/SubHeading";
 import { ChannelContext } from "../contexts/ChannelContext";
 import {
   createAndSaveTokensCall,
-  getStats,
   getVidList,
   updateThumbnail,
 } from "../firebase/client";
@@ -29,14 +21,12 @@ import {
   createTesting,
   CreateThumbnailTestingInput,
 } from "../firebase/createTesting";
-import { DurationType, TestingType } from "../firebase/types/Testing.type";
+import { DurationType } from "../firebase/types/Testing.type";
+import { urlResolver } from "../lib/UrlResolver";
 import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
   ACTION_CARD_CLASSNAMES,
-  primaryColor,
 } from "../theme";
-import { ICON_SIZE } from "../constants";
-import { urlResolver } from "../lib/UrlResolver";
 
 interface Props {}
 
@@ -151,10 +141,6 @@ const CreateTest = ({}: Props) => {
       console.log("error inside  catch", error);
       console.log("......error creating");
     }
-  };
-  const handleStats = async () => {
-    const videoIds = uploads?.map((upload) => upload.videoId);
-    getStats({ channelId, videoIds });
   };
 
   const handleSelectUpload = (id: string) => {

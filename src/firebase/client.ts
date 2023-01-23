@@ -1,12 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 import {
   connectFunctionsEmulator,
   getFunctions,
   httpsCallable,
 } from "firebase/functions";
-import { connectStorageEmulator, getStorage } from "firebase/storage";
+import { getStorage } from "firebase/storage";
 import { firebaseConfig } from "./config";
 
 const app = initializeApp(firebaseConfig);
@@ -30,6 +30,7 @@ export const getVidList = httpsCallable(functions, "getVidList");
 export const googleLogout = httpsCallable(functions, "googleLogout");
 export const updateThumbnail = httpsCallable(functions, "updateThumbnail");
 export const getStats = httpsCallable(functions, "getStats");
+export const getStatsOneVid = httpsCallable(functions, "getStatsOneVid");
 export const createAndSaveTokensCall = httpsCallable(
   functions,
   "createAndSaveTokensCall"
