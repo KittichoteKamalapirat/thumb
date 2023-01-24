@@ -116,20 +116,17 @@ const CreateTest = ({}: Props) => {
     shouldUnregister: true,
   });
 
-  console.log("errors", errors);
   const durationTypeWatch = watch(FormNames.DURATION_TYPE);
   const videoIdWatch = watch(FormNames.VIDEO_ID);
   const durationWatch = watch(FormNames.VIDEO_ID);
-  console.log("durationTypeWatch", durationTypeWatch);
 
   const handleList = async () => {
     if (!channelId) return;
-    console.log("list starts");
+
     const result = await getVidList(channelId);
-    console.log("result", result);
+
     const myUploads = result.data as MyUpload[];
     setUploads(myUploads);
-    console.log("list ends");
   };
 
   const navigate = useNavigate();
@@ -153,28 +150,24 @@ const CreateTest = ({}: Props) => {
     };
 
     try {
-      console.log("......");
       const docId = await createTesting(channelId, dbInput);
       if (docId) {
-        console.log(".......success!!!", docId);
         navigate(urlResolver.myTest(docId));
-      } else console.log("......cannot create ");
+      } else {
+        console.log("......cannot create ");
+      }
     } catch (error) {
       console.log("error inside  catch", error);
-      console.log("......error creating");
     }
   };
 
   const handleSelectUpload = (id: string) => {
-    console.log("click", id);
     if (!uploads) return;
     const upload = uploads.find(({ videoId }) => videoId === id) as MyUpload;
-    console.log("match", upload);
+
     setSelectedUpload(upload);
-    console.log("settttt");
   };
 
-  // console.log("xx", watch());
   const isSubmittable =
     videoIdWatch &&
     fileUploads[0] &&
@@ -188,22 +181,16 @@ const CreateTest = ({}: Props) => {
   useEffect(() => {
     const codes = location.search.match(CODE_REGEX);
     const code = codes?.[0];
-    console.log("code", code);
 
     const ano = async () => {
-      console.log("create and save token");
       if (!code) return;
       const result = await createAndSaveTokensCall(code);
-
-      console.log("resultttttt", result);
 
       const { channelId } = result.data as { channelId: string };
 
       localStorage.setItem("channelId", channelId);
       const channel = { channelId };
       setChannel(channel);
-
-      console.log("result", result);
     };
 
     ano();

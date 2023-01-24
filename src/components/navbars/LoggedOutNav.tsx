@@ -7,11 +7,13 @@ import { getAuthURLCall } from "../../firebase/client";
 import { primaryColor } from "../../theme";
 import Button, { ButtonTypes } from "../Buttons/Button";
 import NavItem from "./NavItem";
+import { useCreateAndSaveToken } from "../../hooks/useCreateAndSaveToken";
 
 enum PATH_ENUM {
   HOME = "/",
 }
 const LoggedInNav = () => {
+  useCreateAndSaveToken();
   const { pathname } = useLocation();
 
   const handleCreateURL = async () => {
