@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { collection, onSnapshot } from "firebase/firestore";
 import { docs_v1 } from "googleapis";
 import React, { useContext, useEffect, useState } from "react";
@@ -77,7 +78,7 @@ const Testings = ({}: Props) => {
             <LabelAndData label="Status" data={String(testing?.status)} />
             <LabelAndData
               label="Start Date"
-              data={String(testing?.startDate)}
+              data={dayjs(testing?.startDate).format("MMMM D, YYYY")}
             />
 
             {testing.type === "thumbnail" && (

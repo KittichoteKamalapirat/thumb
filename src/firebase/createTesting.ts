@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { FormValues } from "../pages/create-test";
 import { firestore } from "./client";
@@ -24,10 +24,11 @@ export const createTesting = async (
     const unixDate = dayjs().valueOf();
     const input: Testing = {
       id,
-      startDate: unixDate,
+      startDate: new Date().toISOString(),
       type: "thumbnail",
       status: "ongoing",
       channelId,
+      createdAt: new Date().toISOString(),
       ...form,
     };
 

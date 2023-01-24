@@ -11,6 +11,7 @@ import CreateTest from "./pages/create-test";
 import Home from "./pages/home";
 import Testing from "./pages/testing";
 import Testings from "./pages/testings";
+import UploadThumbnail from "./pages/update-thumbnail";
 
 function App() {
   const [channel, setChannel] = useState<Channel>(emptyChannel);
@@ -37,6 +38,7 @@ function App() {
               }
             />
             <Route path="/tests" element={<Testings />} />
+            <Route path="/upload-thumbnail" element={<UploadThumbnail />} />
             <Route path="/tests/:id" element={<Testing />} />
             <Route path="/account" element={<MyAccount />} />
             <Route index path="/create-test" element={<CreateTest />} />

@@ -12,7 +12,7 @@ import { useCreateAndSaveToken } from "../../hooks/useCreateAndSaveToken";
 enum PATH_ENUM {
   HOME = "/",
 }
-const LoggedInNav = () => {
+const LoggedOutNav = () => {
   useCreateAndSaveToken();
   const { pathname } = useLocation();
 
@@ -62,4 +62,4 @@ const LoggedInNav = () => {
   );
 };
 
-export default LoggedInNav;
+export default LoggedOutNav;

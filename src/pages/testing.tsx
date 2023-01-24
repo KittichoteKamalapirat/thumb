@@ -180,9 +180,7 @@ const MyTesting = ({}: Props) => {
       <LabelAndData label="Status" data={String(testing?.status)} />
       <LabelAndData
         label="Start Date"
-        data={String(
-          dayjs.unix(testing?.startDate / 1000).format("MMMM D, YYYY")
-        )}
+        data={dayjs(testing?.startDate).format("MMMM D, YYYY")}
       />
 
       {testing.type === "thumbnail" && (

@@ -91,8 +91,6 @@ const defaultValues = {
   // [FormNames.TYPE]: null,
 };
 
-const CODE_REGEX = new RegExp("(?<=code=)(.*)(?=&scope)");
-
 const CreateTest = ({}: Props) => {
   const [selectedUpload, setSelectedUpload] = useState<MyUpload>();
   const [uploads, setUploads] = useState<MyUpload[] | null>(null);
@@ -174,27 +172,10 @@ const CreateTest = ({}: Props) => {
     (durationTypeWatch === "stats_significant" ||
       (durationTypeWatch === "specific" && durationWatch));
 
-  // useEffect(() => {
-  //   if (channelId) handleList();
-  // }, [channelId]);
-
   useEffect(() => {
-    const codes = location.search.match(CODE_REGEX);
-    const code = codes?.[0];
+    if (channelId) handleList();
+  }, [channelId]);
 
-    const ano = async () => {
-      if (!code) return;
-      const result = await createAndSaveTokensCall(code);
-
-      const { channelId } = result.data as { channelId: string };
-
-      localStorage.setItem("channelId", channelId);
-      const channel = { channelId };
-      setChannel(channel);
-    };
-
-    ano();
-  }, [location]);
   return (
     <Layout>
       {/* <Navbar /> */}

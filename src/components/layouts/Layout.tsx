@@ -1,7 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
+import { ChannelContext } from "../../contexts/ChannelContext";
 import Container from "../containers/Container";
 import { Footer } from "../Footer";
 import LoggedInNav from "../navbars/LoggedInNav";
+import LoggedOutNav from "../navbars/LoggedOutNav";
 import Navbar from "../navbars/Navbar2";
 
 interface Props {
@@ -28,9 +30,11 @@ const Layout = ({
   alignItems = "",
   extraStyle = "",
 }: Props) => {
+  const { channel } = useContext(ChannelContext);
+  const { channelId } = channel;
   return (
     <div>
-      <LoggedInNav />
+      {channelId ? <LoggedInNav /> : <LoggedOutNav />}
       <div className="bg-grey-0 text-grey-900 h-min-screen ">
         <main
           className={`flex-1 h-full w-full ${justifyContent} ${alignItems} ${extraStyle} `}

@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 const DurationTypes = ["specific", "stats_significant"] as const;
 export type DurationType = typeof DurationTypes[number];
 
@@ -9,13 +11,14 @@ export type TestingStatus = typeof TestingStatuses[number];
 
 export interface Testing {
   id: string;
-  startDate: number;
+  startDate: string;
   channelId: string; // as userId
   videoId: string;
   durationType: DurationType;
   duration?: number; // days
   type: TestingType;
   status: TestingStatus; // if complete => has result
+  createdAt: string; // timezone in utc and format in iso
 }
 
 export interface ThumbnailTesting extends Testing {
