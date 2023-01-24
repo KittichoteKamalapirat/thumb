@@ -1,6 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { string, z } from "zod";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
-import { Control, FieldError, useForm } from "react-hook-form";
+import { Control, FieldError, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button, { HTMLButtonType } from "../components/Buttons/Button";
 import DropzoneField, { UploadedFile } from "../components/DropzoneField";
@@ -42,6 +44,17 @@ interface StatProps {
   videoIds: string[];
 }
 
+const StatsSignificantSchema = z.object({
+  videoId: z.string(),
+  durationType: z.literal("stats_significant"),
+});
+
+const CertainDaysSchema = z.object({
+  videoId: z.string(),
+  durationType: z.literal("specific"),
+  duration: z.number(),
+});
+
 const durationTypeOptions: { label: string; value: DurationType }[] = [
   { label: "A set number of days", value: "specific" },
   {
@@ -50,6 +63,13 @@ const durationTypeOptions: { label: string; value: DurationType }[] = [
   },
 ];
 
+const FormSchema = z.discriminatedUnion("durationType", [
+  StatsSignificantSchema,
+  CertainDaysSchema,
+]);
+
+export type FormValues = z.infer<typeof FormSchema>;
+
 enum FormNames {
   VIDEO_ID = "videoId",
   DURATION_TYPE = "durationType",
@@ -57,12 +77,12 @@ enum FormNames {
   // TYPE = "type",
 }
 
-export interface FormValues {
-  [FormNames.VIDEO_ID]: string;
-  [FormNames.DURATION_TYPE]: DurationType;
-  [FormNames.DURATION]: number; // in days
-  // [FormNames.TYPE]: TestingType ; // TODO add this later, now only thumbnail
-}
+// export interface FormValues {
+//   [FormNames.VIDEO_ID]: string;
+//   [FormNames.DURATION_TYPE]: DurationType;
+//   [FormNames.DURATION]: number; // in days
+//   // [FormNames.TYPE]: TestingType ; // TODO add this later, now only thumbnail
+// }
 
 const defaultValues = {
   [FormNames.VIDEO_ID]: "",
@@ -91,7 +111,10 @@ const CreateTest = ({}: Props) => {
     setValue,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
+    shouldUnregister: true,
+  });
 
   console.log("errors", errors);
   const durationTypeWatch = watch(FormNames.DURATION_TYPE);
@@ -118,13 +141,12 @@ const CreateTest = ({}: Props) => {
     });
   };
 
-  const onSubmit = async (input: FormValues) => {
-    console.log("input", input);
+  const onSubmit: SubmitHandler<FormValues> = async (input) => {
     const originalThumbUrl = uploads?.find(
       (upload) => upload.videoId === input[FormNames.VIDEO_ID]
     )?.thumbnailUrl as string;
 
-    const dbInput: CreateThumbnailTestingInput = {
+    const dbInput = {
       originalThumbUrl, // todo what if testing title
       variationThumbUrl: fileUploads[0].url,
       ...input,
@@ -152,22 +174,18 @@ const CreateTest = ({}: Props) => {
     console.log("settttt");
   };
 
+  // console.log("xx", watch());
   const isSubmittable =
     videoIdWatch &&
     fileUploads[0] &&
     (durationTypeWatch === "stats_significant" ||
       (durationTypeWatch === "specific" && durationWatch));
 
-  useEffect(() => {
-    if (channelId) handleList();
-  }, [channelId]);
+  // useEffect(() => {
+  //   if (channelId) handleList();
+  // }, [channelId]);
 
-  // clear duration to 0 if durationType = stats_significant
   useEffect(() => {
-    if (durationTypeWatch === "stats_significant") setValue("duration", 0);
-  });
-  useEffect(() => {
-    console.log("111111111");
     const codes = location.search.match(CODE_REGEX);
     const code = codes?.[0];
     console.log("code", code);
@@ -288,7 +306,7 @@ const CreateTest = ({}: Props) => {
                     Run until Click Through Rate (CTR) is "Statistically
                     Significant
                   </p>
-                  <p>
+                  <p className="mt-4">
                     Statistical significance is a way to know if something
                     happened because of a good reason or just by chance, like
                     flipping a coin and getting heads or tails.
@@ -307,37 +325,41 @@ const CreateTest = ({}: Props) => {
               <div className="flex item-start gap-2">
                 <div>
                   <p className="font-bold">A set number of days</p>
-                  <p>Test will complete on Tuesday, November 30, 2021</p>
 
                   {/* Select duration ends */}
 
-                  <TextField
-                    required={durationTypeWatch === "specific"}
-                    name={FormNames.DURATION}
-                    control={control as unknown as Control}
-                    containerClass="w-full sm:w-80"
-                    placeholder="15"
-                    inputType={InputType.Number}
-                    type={TextFieldTypes.OUTLINED}
-                    extraClass="w-full"
-                    labelClass="mt-4"
-                    error={errors[FormNames.DURATION]}
-                    validation={
-                      durationTypeWatch === "specific"
-                        ? {
-                            min: {
-                              value: 1,
-                              message: "cannot be 0",
-                            },
-                            max: {
-                              value: 100,
-                              message: "has to be less than 101",
-                            },
-                          }
-                        : {}
-                    }
-                  />
-                  <p>
+                  {durationTypeWatch === "specific" && (
+                    <TextField
+                      name={FormNames.DURATION}
+                      control={control as unknown as Control}
+                      containerClass="w-full sm:w-80"
+                      placeholder="15"
+                      inputType={InputType.Number}
+                      type={TextFieldTypes.OUTLINED}
+                      extraClass="w-full"
+                      labelClass="mt-4"
+                      error={errors[FormNames.DURATION as keyof typeof errors]}
+                      validation={
+                        durationTypeWatch === "specific"
+                          ? {
+                              min: {
+                                value: 1,
+                                message: "cannot be 0",
+                              },
+                              max: {
+                                value: 100,
+                                message: "has to be less than 101",
+                              },
+                            }
+                          : {}
+                      }
+                    />
+                  )}
+                  <p className="mt-4">
+                    Test will complete on Tuesday, November 30, 2021
+                  </p>
+
+                  <p className="mt-4">
                     Final results will be available on Thursday, December 2,
                     2021 because Youtube Analytics are deolayed 48 hours
                   </p>
@@ -347,6 +369,7 @@ const CreateTest = ({}: Props) => {
           </div>
         </div>
 
+        {JSON.stringify(watch(), null, 2)}
         {/* section 3 Select a thumbnail */}
         <div data-section="3" className="mt-4">
           <div className="flex gap-2">

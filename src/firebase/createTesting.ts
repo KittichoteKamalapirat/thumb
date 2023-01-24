@@ -8,7 +8,7 @@ import { DurationType, Testing } from "./types/Testing.type";
 export interface CreateThumbnailTestingInput {
   videoId: string;
   durationType: DurationType;
-  duration: number;
+  duration?: number;
   originalThumbUrl: string;
   variationThumbUrl: string;
 }

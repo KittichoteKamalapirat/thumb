@@ -72,15 +72,15 @@ const useClassNames = (
   const inputSpinButtonsClass = showNumberArrows
     ? ""
     : styles.input_no_spin_buttons;
-  const commonInputClass = `${styles.input} ${disabledStyles} ${inputSpinButtonsClass} w-full appearance-none focus:outline-none`;
+  const commonInputClass = `mt-2 h-12 w-[100%] rounded-lg border auto bg-ice px-4  ${disabledStyles} ${inputSpinButtonsClass}  w-full appearance-none focus:outline-none`;
 
-  const commonInputDivClass = `flex justify-between items-center appearance-none border rounded ${widthClass} ${disabledStyles} h-8 text-gray-700 text-xxs focus:outline-none ${extraClass}`;
+  const commonInputDivClass = `${widthClass} ${disabledStyles} ${extraClass}`;
 
   switch (type) {
     case TextFieldTypes.OUTLINED:
       return {
         inputClass: commonInputClass,
-        inputDivClass: `${inputPaddingClass} ${commonInputDivClass} ${
+        inputDivClass: `${commonInputDivClass} ${
           displayError ? "border-red-500" : "border-grey-225"
         }`,
         labelBaseClass: disabledBaseStyles,

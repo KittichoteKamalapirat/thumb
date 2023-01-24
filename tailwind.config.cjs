@@ -159,6 +159,7 @@ module.exports = {
         "blue-bg": "#E0F2FE", // for endo table status
         orange: orange,
         black: black,
+        ice: "#F8FBFC",
       },
       animation: {
         "spin-slow": "spin 12s linear infinite",

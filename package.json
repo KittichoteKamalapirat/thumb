@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.10",
     "@stripe/stripe-js": "^1.46.0",
     "axios": "^1.2.2",
     "classnames": "^2.3.2",
@@ -25,7 +26,8 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.6.1",
     "stripe": "^11.6.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/jest": "^29.2.6",

@@ -13,7 +13,7 @@ export interface Testing {
   channelId: string; // as userId
   videoId: string;
   durationType: DurationType;
-  duration: number; // days
+  duration?: number; // days
   type: TestingType;
   status: TestingStatus; // if complete => has result
 }
