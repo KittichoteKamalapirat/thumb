@@ -12,6 +12,7 @@ import Home from "./pages/home";
 import Testing from "./pages/testing";
 import Testings from "./pages/testings";
 import UploadThumbnail from "./pages/update-thumbnail";
+import Xxx from "./pages/xxx";
 
 function App() {
   const [channel, setChannel] = useState<Channel>(emptyChannel);
@@ -38,6 +39,7 @@ function App() {
               }
             />
             <Route path="/tests" element={<Testings />} />
+            <Route path="/xxx" element={<Xxx />} />
             <Route path="/upload-thumbnail" element={<UploadThumbnail />} />
             <Route path="/tests/:id" element={<Testing />} />
             <Route path="/account" element={<MyAccount />} />

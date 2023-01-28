@@ -22,7 +22,9 @@ const grey800 = "#292929";
 const grey850 = "#1F1F1F";
 const grey900 = "#121212";
 
-const primaryColor = grey900;
+const primaryColor = "#FEC600";
+const primaryHoveredColor = "#FFD333";
+
 // main
 const primaryColor50 = "#EBEEFF";
 const primaryColor100 = "#C2CBFF";
@@ -35,7 +37,6 @@ const primaryColor700 = primaryColor;
 const primaryColor800 = "#00158F";
 const primaryColor850 = "#000F66";
 const primaryColor900 = "#00093D";
-const primaryHoveredColor = primaryColor600;
 
 const bgColor = grey0;
 const primaryTextColor = grey900;
@@ -71,6 +72,12 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens,
+    boxShadow: {
+      sm: "2px 2px rgba(0,0,0,1)",
+      md: "4px 4px rgba(0,0,0,1)",
+      lg: "6px 6px rgba(0,0,0,1)",
+      xl: "8px 8px rgba(0,0,0,1)",
+    },
     extend: {
       fontFamily: {
         sans: sansFamily,
@@ -109,6 +116,7 @@ module.exports = {
           800: grey800,
           850: grey850,
           900: grey900,
+          DEFAULT: grey900,
         },
         primary: {
           50: primaryColor50,

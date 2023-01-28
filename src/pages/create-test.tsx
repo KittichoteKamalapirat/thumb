@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { string, z } from "zod";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import { Control, FieldError, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { z } from "zod";
 import Button, { HTMLButtonType } from "../components/Buttons/Button";
 import DropzoneField, { UploadedFile } from "../components/DropzoneField";
 import CardRadioField from "../components/forms/RadioField/CardRadioField";
@@ -14,15 +14,8 @@ import Layout from "../components/layouts/Layout";
 import PageHeading from "../components/typography/PageHeading";
 import SubHeading from "../components/typography/SubHeading";
 import { ChannelContext } from "../contexts/ChannelContext";
-import {
-  createAndSaveTokensCall,
-  getVidList,
-  updateThumbnail,
-} from "../firebase/client";
-import {
-  createTesting,
-  CreateThumbnailTestingInput,
-} from "../firebase/createTesting";
+import { getVidList } from "../firebase/client";
+import { createTesting } from "../firebase/createTesting";
 import { DurationType } from "../firebase/types/Testing.type";
 import { urlResolver } from "../lib/UrlResolver";
 import {
@@ -69,6 +62,11 @@ const FormSchema = z.discriminatedUnion("durationType", [
 ]);
 
 export type FormValues = z.infer<typeof FormSchema>;
+
+export type CreateThumbnailTestInput = FormValues & {
+  originalThumbUrl: string;
+  variationThumbUrl: string;
+};
 
 enum FormNames {
   VIDEO_ID = "videoId",
@@ -118,23 +116,7 @@ const CreateTest = ({}: Props) => {
   const videoIdWatch = watch(FormNames.VIDEO_ID);
   const durationWatch = watch(FormNames.VIDEO_ID);
 
-  const handleList = async () => {
-    if (!channelId) return;
-
-    const result = await getVidList(channelId);
-
-    const myUploads = result.data as MyUpload[];
-    setUploads(myUploads);
-  };
-
   const navigate = useNavigate();
-  const handleUpload = async () => {
-    updateThumbnail({
-      videoId: selectedUpload?.videoId,
-      thumbUrl: fileUploads[0].url,
-      channelId,
-    });
-  };
 
   const onSubmit: SubmitHandler<FormValues> = async (input) => {
     const originalThumbUrl = uploads?.find(
@@ -159,13 +141,6 @@ const CreateTest = ({}: Props) => {
     }
   };
 
-  const handleSelectUpload = (id: string) => {
-    if (!uploads) return;
-    const upload = uploads.find(({ videoId }) => videoId === id) as MyUpload;
-
-    setSelectedUpload(upload);
-  };
-
   const isSubmittable =
     videoIdWatch &&
     fileUploads[0] &&
@@ -173,6 +148,12 @@ const CreateTest = ({}: Props) => {
       (durationTypeWatch === "specific" && durationWatch));
 
   useEffect(() => {
+    const handleList = async () => {
+      const result = await getVidList(channelId);
+      const myUploads = result.data as MyUpload[];
+      setUploads(myUploads);
+    };
+
     if (channelId) handleList();
   }, [channelId]);
 
@@ -386,8 +367,6 @@ const CreateTest = ({}: Props) => {
           </div>
         </div>
 
-        {/* <Button label="Get list" onClick={handleList} fontColor="text-grey-0" /> */}
-        {/* <Button label="Upload" onClick={handleUpload} fontColor="text-grey-0" /> */}
         <div className="flex justify-end mt-10">
           <Button
             label="Create a test"
@@ -396,12 +375,6 @@ const CreateTest = ({}: Props) => {
             disabled={!isSubmittable}
           />
         </div>
-
-        {/* <Button
-          label="Get stats"
-          onClick={handleStats}
-          fontColor="text-grey-0"
-        /> */}
       </form>
     </Layout>
   );

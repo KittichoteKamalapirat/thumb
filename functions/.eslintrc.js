@@ -32,5 +32,6 @@ module.exports = {
     "import/no-unresolved": 0,
     "object-curly-spacing": "off",
     "require-jsdoc": "off",
+    "max-len": "off",
   },
 };

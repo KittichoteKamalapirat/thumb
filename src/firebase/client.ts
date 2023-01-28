@@ -1,12 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import {
   connectFunctionsEmulator,
   getFunctions,
   httpsCallable,
 } from "firebase/functions";
-import { getStorage } from "firebase/storage";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 import { firebaseConfig } from "./config";
 
 const app = initializeApp(firebaseConfig);
@@ -17,7 +17,7 @@ export const functions = getFunctions(app);
 
 // connectFirestoreEmulator(firestore, "localhost", 8080); // remove this line when using cloud firestore
 // connectStorageEmulator(storage, "localhost", 9199);
-connectFunctionsEmulator(functions, "localhost", 5001);
+// connectFunctionsEmulator(functions, "localhost", 5001);
 
 export const createAndSaveTokens = httpsCallable(
   functions,
@@ -30,6 +30,7 @@ export const getVidList = httpsCallable(functions, "getVidList");
 export const googleLogout = httpsCallable(functions, "googleLogout");
 export const updateThumbnail = httpsCallable(functions, "updateThumbnail");
 export const getStats = httpsCallable(functions, "getStats");
+export const createHelloPubsub = httpsCallable(functions, "createHelloPubsub");
 export const getStatsOneVid = httpsCallable(functions, "getStatsOneVid");
 export const createAndSaveTokensCall = httpsCallable(
   functions,

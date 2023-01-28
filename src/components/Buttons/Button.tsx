@@ -61,7 +61,7 @@ const useClassName = ({
   extraClass,
   height,
 }: ClassProps) => {
-  const commonClass = `no-underline px-4 rounded-md ${fontSize} ${height} ${spacing} ${borderRadius} ${extraClass} ${
+  const commonClass = `px-4 border border-2 border-grey py-2 text-grey rounded shadow-md no-underline px-4 rounded-md ${fontSize} ${height} ${spacing} ${borderRadius} ${extraClass} ${
     disabled ? "opacity-50 cursor-not-allowed" : ""
   }`;
   const borderClass = `${borderColor} ${borderWidth}`;

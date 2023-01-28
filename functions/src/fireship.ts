@@ -13,9 +13,17 @@ const video_id = "xxx";
 
 const oauth2Client = getOAuth2Client();
 
-async function updateVideoTitle() {
+export const updateVideoTitle = async ({
+  videoId,
+  newTitle,
+  channelId,
+}: {
+  videoId: string;
+  newTitle: string;
+  channelId: string;
+}) => {
   // Get refresh_token from DB
-  const channelId = (await getChannelId()) as string;
+
   const tokens = (
     await admin.firestore().doc(tokensPath(channelId)).get()
   ).data() as admin.firestore.DocumentData;
@@ -29,16 +37,14 @@ async function updateVideoTitle() {
 
   // Get video
   const result = await youtube.videos.list({
-    id: video_id,
+    id: videoId,
     part: "statistics,snippet",
   } as any); // TODO
 
   const video = (result as any).data.items[0]; // TODO
   const oldTitle = video.snippet.title;
 
-  const { viewCount } = video.statistics;
-
-  const newTitle = `How RESTful APIs work | this video has ${viewCount} views`;
+  // const newTitle = `How RESTful APIs work | this video has ${viewCount} views`;
 
   video.snippet.title = newTitle;
 
@@ -61,7 +67,7 @@ async function updateVideoTitle() {
     newTitle,
     video,
   };
-}
+};
 
 const genArrbufFromUrl = async ({
   url,
@@ -81,7 +87,7 @@ const genArrbufFromUrl = async ({
   return { localPath };
 };
 
-export const updateThumbnail = functions.https.onCall(
+export const updateThumbnailCall = functions.https.onCall(
   async ({
     videoId,
     thumbUrl,
@@ -91,35 +97,47 @@ export const updateThumbnail = functions.https.onCall(
     thumbUrl: string;
     channelId: string;
   }) => {
-    console.log("updateeeee", videoId, thumbUrl);
-    const { localPath } = await genArrbufFromUrl({
-      url: thumbUrl,
-      filename: "name",
-      type: "jpg",
-    });
-    // Get refresh_token from DB
-    const tokens = (
-      await admin.firestore().doc(tokensPath(channelId)).get()
-    ).data() as admin.firestore.DocumentData;
-    oauth2Client.setCredentials(tokens);
-
-    // YouTube client
-    const youtube = google.youtube({
-      version: "v3",
-      auth: oauth2Client,
-    });
-
-    // Update thumbnail
-    youtube.thumbnails.set({
-      videoId,
-      media: {
-        body: fs.createReadStream(localPath),
-      },
-    });
-
-    return true;
+    return updateThumbnail({ videoId, thumbUrl, channelId });
   }
 );
+
+export const updateThumbnail = async ({
+  videoId,
+  thumbUrl,
+  channelId,
+}: {
+  videoId: string;
+  thumbUrl: string;
+  channelId: string;
+}) => {
+  console.log("updateeeee", videoId, thumbUrl);
+  const { localPath } = await genArrbufFromUrl({
+    url: thumbUrl,
+    filename: "name",
+    type: "jpg",
+  });
+  // Get refresh_token from DB
+  const tokens = (
+    await admin.firestore().doc(tokensPath(channelId)).get()
+  ).data() as admin.firestore.DocumentData;
+  oauth2Client.setCredentials(tokens);
+
+  // YouTube client
+  const youtube = google.youtube({
+    version: "v3",
+    auth: oauth2Client,
+  });
+
+  // Update thumbnail
+  youtube.thumbnails.set({
+    videoId,
+    media: {
+      body: fs.createReadStream(localPath),
+    },
+  });
+
+  return true;
+};
 
 export const getVidList = functions.https.onCall(async (channelId: string) => {
   // Get refresh_token from DB
@@ -198,9 +216,9 @@ export const getChannel = functions.https.onCall(async () => {
   return;
 });
 
-export const updateVideoJob = functions.pubsub
-  .schedule("every 3 minutes")
-  .onRun((context) => updateVideoTitle());
+// export const updateVideoJob = functions.pubsub
+//   .schedule("every 3 minutes")
+//   .onRun((context) => updateVideoTitle());
 
 // OAuth Code
 export const createAndSaveTokensReq = functions.https.onRequest(
@@ -265,7 +283,7 @@ export const createAndSaveTokensCall = functions.https // }) //   allowInvalidAp
       return { channelId };
     } catch (error) {
       console.log("error in catch", error);
-      return;
+      return { channelId: "" };
     }
   });
 
@@ -321,3 +339,7 @@ export const getOAuth2ClientRequest = functions.https.onRequest(
     res.send(client);
   }
 );
+
+export const schedule = () => {
+  functions.pubsub.schedule("every day at 8:00 am");
+};
