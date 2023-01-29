@@ -42,6 +42,7 @@ const CertainDaysSchema = z.object({
   videoId: z.string(),
   durationType: z.literal("specific"),
   duration: z.number(),
+  type: z.literal("thumb"),
 });
 
 const durationTypeOptions: { label: string; value: DurationType }[] = [
@@ -68,6 +69,7 @@ enum FormNames {
   VIDEO_ID = "videoId",
   DURATION_TYPE = "durationType",
   DURATION = "duration",
+  TYPE = "type",
   // TYPE = "type",
 }
 
@@ -78,10 +80,12 @@ enum FormNames {
 //   // [FormNames.TYPE]: TestingType ; // TODO add this later, now only thumbnail
 // }
 
-const defaultValues = {
+const defaultValues: FormValues = {
   [FormNames.VIDEO_ID]: "",
-  [FormNames.DURATION_TYPE]: null,
-  [FormNames.DURATION]: null, // in days
+  [FormNames.DURATION_TYPE]: "specific",
+  [FormNames.DURATION]: 7, // in days
+  [FormNames.TYPE]: "thumb",
+
   // [FormNames.TYPE]: null,
 };
 
@@ -104,10 +108,12 @@ const CreateTest = ({}: Props) => {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
+    defaultValues,
     resolver: zodResolver(FormSchema),
     shouldUnregister: true,
   });
 
+  console.log("errors", errors);
   const durationTypeWatch = watch(FormNames.DURATION_TYPE);
   const videoIdWatch = watch(FormNames.VIDEO_ID);
   const durationWatch = watch(FormNames.VIDEO_ID);
@@ -152,6 +158,10 @@ const CreateTest = ({}: Props) => {
 
     if (channelId) handleList();
   }, [channelId]);
+
+  useEffect(() => {
+    setValue(FormNames.TYPE, "thumb");
+  }, []);
 
   return (
     <div>

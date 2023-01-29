@@ -8,6 +8,7 @@ import Button, { HTMLButtonType } from "./Buttons/Button";
 import CardRadioField from "./forms/RadioField/CardRadioField";
 
 import { ChannelContext } from "../contexts/ChannelContext";
+import { getVidList } from "../firebase/client";
 import { createTesting } from "../firebase/createTesting";
 import { DurationType } from "../firebase/types/Testing.type";
 import { urlResolver } from "../lib/UrlResolver";
@@ -17,9 +18,7 @@ import {
 } from "../theme";
 import TextField, { TextFieldTypes } from "./forms/TextField";
 import { InputType } from "./forms/TextField/inputType";
-import PageHeading from "./typography/PageHeading";
 import SubHeading from "./typography/SubHeading";
-import { getVidList } from "../firebase/client";
 
 interface Props {}
 

@@ -64,7 +64,7 @@ const CreateTest = () => {
           </div>
         ))}
       </div>
-      {/* {testType === "thumb" && <CreateThumbTest />} */}
+      {testType === "thumb" && <CreateThumbTest />}
       {testType === "title" && <CreateTitleTest />}
     </Layout>
   );

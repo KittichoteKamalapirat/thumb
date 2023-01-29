@@ -1,13 +1,8 @@
-import dayjs from "dayjs";
 import { doc, setDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import {
-  CreateThumbnailTestInput,
-  FormValues,
-} from "../components/CreateThumbTest";
+import { CreateThumbnailTestInput } from "../components/CreateThumbTest";
 import { CreateTitleTestInput } from "../components/CreateTitleTest";
 import { firestore } from "./client";
-import { DurationType, Testing } from "./types/Testing.type";
 
 export const createTesting = async (
   channelId: string,
@@ -18,11 +13,9 @@ export const createTesting = async (
   const docRef = doc(firestore, "channels", channelId, "testings", id);
 
   try {
-    const unixDate = dayjs().valueOf();
     const params = {
       id,
       startDate: new Date().toISOString(),
-      type: "thumbnail",
       status: "ongoing",
       channelId,
       createdAt: new Date().toISOString(),
