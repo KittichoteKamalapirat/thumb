@@ -50,9 +50,6 @@ const CardRadioField = forwardRef(
     }: Props,
     ref
   ) => {
-    console.log("wwwwwatched", watchedValue);
-    console.log("ref", ref);
-
     const formRegisterFields: UseFormRegisterReturn | undefined = (() => {
       return {
         onChange: onChange || noopCallback,

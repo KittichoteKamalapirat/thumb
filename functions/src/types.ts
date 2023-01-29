@@ -1,7 +1,7 @@
 const DurationTypes = ["specific", "stats_significant"] as const;
 export type DurationType = typeof DurationTypes[number];
 
-const TestingTypes = ["thumbnail", "title"] as const;
+const TestingTypes = ["thumb", "title"] as const;
 export type TestingType = typeof TestingTypes[number];
 
 const TestingStatuses = ["ongoing", "complete"] as const;

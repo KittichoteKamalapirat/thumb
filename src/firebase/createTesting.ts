@@ -1,13 +1,17 @@
 import dayjs from "dayjs";
 import { doc, setDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { CreateThumbnailTestInput, FormValues } from "../pages/create-test";
+import {
+  CreateThumbnailTestInput,
+  FormValues,
+} from "../components/CreateThumbTest";
+import { CreateTitleTestInput } from "../components/CreateTitleTest";
 import { firestore } from "./client";
 import { DurationType, Testing } from "./types/Testing.type";
 
 export const createTesting = async (
   channelId: string,
-  input: CreateThumbnailTestInput
+  input: CreateThumbnailTestInput | CreateTitleTestInput
 ): Promise<string> => {
   const id = uuidv4();
 
