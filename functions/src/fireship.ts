@@ -9,7 +9,6 @@ import { getOAuth2Client } from "./getOAuth2Client";
 
 // const { client, secret, redirect } = functions.config().oauth;
 // const { video_id } = functions.config().data;
-const video_id = "xxx";
 
 const oauth2Client = getOAuth2Client();
 
@@ -23,17 +22,24 @@ export const updateVideoTitle = async ({
   channelId: string;
 }) => {
   // Get refresh_token from DB
+  console.log("1");
+  const tokenPath = tokensPath(channelId);
+  console.log(tokenPath);
 
   const tokens = (
-    await admin.firestore().doc(tokensPath(channelId)).get()
+    await admin.firestore().doc(tokenPath).get()
   ).data() as admin.firestore.DocumentData;
   oauth2Client.setCredentials(tokens);
+  console.log("tokens", tokens);
 
+  console.log("2");
   // YouTube client
   const youtube = google.youtube({
     version: "v3",
     auth: oauth2Client,
   });
+
+  console.log("3");
 
   // Get video
   const result = await youtube.videos.list({
@@ -41,17 +47,21 @@ export const updateVideoTitle = async ({
     part: "statistics,snippet",
   } as any); // TODO
 
+  console.log("4");
+
   const video = (result as any).data.items[0]; // TODO
   const oldTitle = video.snippet.title;
 
   // const newTitle = `How RESTful APIs work | this video has ${viewCount} views`;
 
   video.snippet.title = newTitle;
+  console.log("5");
+  console.log("video", video);
 
   // Update video
   const updateResult = await youtube.videos.update({
     requestBody: {
-      id: video_id as string,
+      id: videoId,
       snippet: {
         title: newTitle,
         categoryId: video.snippet.categoryId,
@@ -60,7 +70,10 @@ export const updateVideoTitle = async ({
     part: "snippet",
   } as any); // TODO
 
-  console.log(updateResult.status);
+  console.log("6");
+  console.log("status", updateResult.status);
+
+  console.log("7");
 
   return {
     oldTitle,
@@ -302,7 +315,9 @@ export const getAuthURLReq = functions.https.onRequest(async (req, res) => {
   res.send(url);
 });
 
-export const getAuthURLCall = functions.https.onCall(async (req, res) => {
+export const getAuthURLCall = functions.https.onCall(async () => {
+  console.log("111");
+
   const scopes = [
     "profile",
     "email",
@@ -311,10 +326,12 @@ export const getAuthURLCall = functions.https.onCall(async (req, res) => {
     "https://www.googleapis.com/auth/yt-analytics.readonly",
   ];
 
+  console.log("222");
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
   });
+  console.log("333");
 
   return url;
 });

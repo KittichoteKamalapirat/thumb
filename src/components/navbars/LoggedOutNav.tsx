@@ -17,8 +17,12 @@ const LoggedOutNav = () => {
   const { pathname } = useLocation();
 
   const handleCreateURL = async () => {
-    const result = await getAuthURLCall();
+    console.log(1);
+
+    const result = await getAuthURLCall(null); // looks like I need a param, cannot be empty ()
+    console.log(2);
     const url = result.data as string;
+    console.log(3);
     window.location.replace(url);
   };
 

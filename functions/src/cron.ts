@@ -1,3 +1,4 @@
+import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 // import { updateThumbnail } from "./fireship";
 import { ThumbnailTesting } from "./types";
@@ -112,12 +113,37 @@ export const createHelloPubsub = functions.https.onCall(async () => {
   return true;
 });
 
-export const updateTitle10Sec = functions.pubsub
+export const updateTitleEveryMinute = functions.pubsub
   .schedule("* * * * *")
-  .onRun(() =>
-    updateVideoTitle({
-      channelId: "UCR1-y0yMG0onXbQXxoT8QdQ",
-      videoId: "dbf0Y19pqL4",
-      newTitle: dayjs().format("HH mm ss"),
-    })
-  );
+  .onRun(async () => {
+    try {
+      const snapshot = await admin
+        .firestore()
+        .collectionGroup("testings")
+        .get();
+      const tests = snapshot.docs.map((doc) => doc.data());
+      console.log("tets", tests);
+      //   const result = await updateVideoTitle({
+      //     channelId: "UCR1-y0yMG0onXbQXxoT8QdQ",
+      //     videoId: "dbf0Y19pqL4",
+      //     newTitle: dayjs().format("HH mm ss"),
+      //   });
+      console.log("222222");
+      //   console.log("result", result);
+      return true;
+    } catch (error) {
+      return null;
+    }
+  });
+
+// export const logAfter10Sec = functions.pubsub
+//   .schedule(dayjs().add(10, "minute").toISOString())
+//   .onRun(async () => {
+//     try {
+//       console.log("minute");
+
+//       return true;
+//     } catch (error) {
+//       return null;
+//     }
+//   });
