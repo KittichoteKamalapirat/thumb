@@ -1,87 +1,93 @@
 /* eslint-disable max-len */
 import axios from "axios";
+import dayjs from "dayjs";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as fs from "fs";
 import { google } from "googleapis";
 import { tokensPath } from "./constants";
 import { getOAuth2Client } from "./getOAuth2Client";
+import { TitleTesting, TitleUploadHistory } from "./types";
 
 // const { client, secret, redirect } = functions.config().oauth;
 // const { video_id } = functions.config().data;
-
 const oauth2Client = getOAuth2Client();
 
-export const updateVideoTitle = async ({
-  videoId,
-  newTitle,
-  channelId,
-}: {
-  videoId: string;
-  newTitle: string;
-  channelId: string;
-}) => {
+const youtube = google.youtube({
+  version: "v3",
+  auth: oauth2Client,
+});
+
+export const updateVideoTitle = async (testing: TitleTesting) => {
   // Get refresh_token from DB
-  console.log("1");
-  const tokenPath = tokensPath(channelId);
-  console.log(tokenPath);
+  try {
+    const { videoId, variationTitle: newTitle, channelId } = testing;
 
-  const tokens = (
-    await admin.firestore().doc(tokenPath).get()
-  ).data() as admin.firestore.DocumentData;
-  oauth2Client.setCredentials(tokens);
-  console.log("tokens", tokens);
+    const tokenPath = tokensPath(channelId);
 
-  console.log("2");
-  // YouTube client
-  const youtube = google.youtube({
-    version: "v3",
-    auth: oauth2Client,
-  });
+    const tokens = (
+      await admin.firestore().doc(tokenPath).get()
+    ).data() as admin.firestore.DocumentData;
+    oauth2Client.setCredentials(tokens);
 
-  console.log("3");
-
-  // Get video
-  const result = await youtube.videos.list({
-    id: videoId,
-    part: "statistics,snippet",
-  } as any); // TODO
-
-  console.log("4");
-
-  const video = (result as any).data.items[0]; // TODO
-  const oldTitle = video.snippet.title;
-
-  // const newTitle = `How RESTful APIs work | this video has ${viewCount} views`;
-
-  video.snippet.title = newTitle;
-  console.log("5");
-  console.log("video", video);
-
-  // Update video
-  const updateResult = await youtube.videos.update({
-    requestBody: {
+    // Get video
+    const result = await youtube.videos.list({
       id: videoId,
-      snippet: {
-        title: newTitle,
-        categoryId: video.snippet.categoryId,
+      part: "statistics,snippet",
+    } as any); // TODO
+
+    const video = (result as any).data.items[0]; // TODO
+
+    video.snippet.title = newTitle;
+
+    // Update video
+    await youtube.videos.update({
+      requestBody: {
+        id: videoId as string,
+        snippet: {
+          title: newTitle,
+          categoryId: video.snippet.categoryId, // somehow need this line
+        },
       },
-    },
-    part: "snippet",
-  } as any); // TODO
+      part: "snippet",
+    } as any); // TODO
 
-  console.log("6");
-  console.log("status", updateResult.status);
+    await addTitleToHistory(testing);
 
-  console.log("7");
-
-  return {
-    oldTitle,
-    newTitle,
-    video,
-  };
+    return {
+      newTitle,
+      video,
+    };
+  } catch (error) {
+    console.log("error", error);
+    return null;
+  }
 };
 
+const addTitleToHistory = async (testing: TitleTesting) => {
+  try {
+    const { variationTitle: newTitle, channelId, id } = testing;
+
+    const testingRef = await admin
+      .firestore()
+      .doc(`channels/${channelId}/testings/${id}`);
+
+    const history: TitleUploadHistory = {
+      title: newTitle,
+      date: dayjs().toISOString(),
+    };
+
+    // Atomically add a new region to the "regions" array field.
+    testingRef.update({
+      history: admin.firestore.FieldValue.arrayUnion(history),
+    });
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
 const genArrbufFromUrl = async ({
   url,
   filename,

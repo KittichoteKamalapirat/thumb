@@ -7,10 +7,16 @@ export type TestingType = typeof TestingTypes[number];
 const TestingStatuses = ["ongoing", "complete"] as const;
 export type TestingStatus = typeof TestingStatuses[number];
 
-export interface thunbmailUploadHistory {
+export interface ThumbUploadHistory {
   date: string; // see YOUTUBE_DATA_API_DATE_FORMAT
   url: string;
 }
+
+export interface TitleUploadHistory {
+  date: string; // see YOUTUBE_DATA_API_DATE_FORMAT
+  title: string;
+}
+
 export interface Testing {
   id: string;
   channelId: string; // as userId
@@ -21,15 +27,16 @@ export interface Testing {
   status: TestingStatus; // if complete => has result
   startDate: string;
   createdAt: string; // timezone in utc and format in iso
-  history: thunbmailUploadHistory[];
 }
 
 export interface ThumbnailTesting extends Testing {
   originalThumbUrl: string;
   variationThumbUrl: string;
+  history: ThumbUploadHistory[];
 }
 
 export interface TitleTesting extends Testing {
   originalTitle: string;
   variationTitle: string;
+  history: TitleUploadHistory[];
 }

@@ -151,3 +151,73 @@ const storeToken = (token: string) => {
     console.log("Token stored to " + TOKEN_PATH);
   });
 };
+
+// export const updateVideoTitle = async ({
+//   videoId,
+//   newTitle,
+//   channelId,
+// }: {
+//   videoId: string;
+//   newTitle: string;
+//   channelId: string;
+// }) => {
+//   // Get refresh_token from DB
+//   console.log("1");
+//   const tokenPath = tokensPath(channelId);
+//   console.log(tokenPath);
+
+//   const tokens = (
+//     await admin.firestore().doc(tokenPath).get()
+//   ).data() as admin.firestore.DocumentData;
+//   oauth2Client.setCredentials(tokens);
+//   console.log("tokens", tokens);
+
+//   console.log("2");
+//   // YouTube client
+//   const youtube = google.youtube({
+//     version: "v3",
+//     auth: oauth2Client,
+//   });
+
+//   console.log("3");
+
+//   // Get video
+//   const result = await youtube.videos.list({
+//     id: videoId,
+//     part: "statistics,snippet",
+//   } as any); // TODO
+
+//   console.log("4");
+
+//   const video = (result as any).data.items[0]; // TODO
+//   const oldTitle = video.snippet.title;
+
+//   // const newTitle = `How RESTful APIs work | this video has ${viewCount} views`;
+
+//   video.snippet.title = newTitle;
+//   console.log("5");
+//   console.log("video", video);
+
+//   // Update video
+//   const updateResult = await youtube.videos.update({
+//     requestBody: {
+//       id: videoId,
+//       snippet: {
+//         title: newTitle,
+//         categoryId: video.snippet.categoryId,
+//       },
+//     },
+//     part: "snippet",
+//   } as any); // TODO
+
+//   console.log("6");
+//   console.log("status", updateResult.status);
+
+//   console.log("7");
+
+//   return {
+//     oldTitle,
+//     newTitle,
+//     video,
+//   };
+// }

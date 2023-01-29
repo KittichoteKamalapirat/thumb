@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 // import { updateThumbnail } from "./fireship";
-import { ThumbnailTesting } from "./types";
+import { ThumbnailTesting, TitleTesting } from "./types";
 import dayjs from "dayjs";
 import { updateVideoTitle } from "./fireship";
 
@@ -116,19 +116,50 @@ export const createHelloPubsub = functions.https.onCall(async () => {
 export const updateTitleEveryMinute = functions.pubsub
   .schedule("* * * * *")
   .onRun(async () => {
+    console.log("aaaaaa");
+
     try {
       const snapshot = await admin
         .firestore()
         .collectionGroup("testings")
+        .where("type", "==", "title")
+        .where("status", "==", "ongoing")
         .get();
-      const tests = snapshot.docs.map((doc) => doc.data());
+      console.log("type is title and ongoing");
+      const tests = snapshot.docs.map((doc) => doc.data()) as TitleTesting[];
       console.log("tets", tests);
-      //   const result = await updateVideoTitle({
-      //     channelId: "UCR1-y0yMG0onXbQXxoT8QdQ",
-      //     videoId: "dbf0Y19pqL4",
-      //     newTitle: dayjs().format("HH mm ss"),
-      //   });
-      console.log("222222");
+
+      // update thumbnail for each test
+      const promiseArray = tests.map(async (test) => {
+        const { startDate, duration, channelId, id } = test;
+        if (!duration) return null;
+        const endDate = dayjs(startDate).add(duration, "day");
+        const now = dayjs();
+        if (endDate.isBefore(now)) {
+          const testingRef = await admin
+            .firestore()
+            .doc(`channels/${channelId}/testings/${id}`);
+
+          const input: Partial<TitleTesting> = { status: "complete" };
+
+          testingRef.set(input, { merge: true });
+          return;
+        } else {
+          return await updateVideoTitle(test);
+        }
+      });
+      console.log("promiseArray", promiseArray);
+
+      const results = await Promise.all(promiseArray);
+
+      // const result = await updateVideoTitle({
+      //   channelId: "UCR1-y0yMG0onXbQXxoT8QdQ",
+      //   videoId: "dbf0Y19pqL4",
+      //   newTitle: dayjs().format("HH mm ss"),
+      // });
+      console.log("22222");
+      console.log(results);
+
       //   console.log("result", result);
       return true;
     } catch (error) {
@@ -140,7 +171,7 @@ export const updateTitleEveryMinute = functions.pubsub
 //   .schedule(dayjs().add(10, "minute").toISOString())
 //   .onRun(async () => {
 //     try {
-//       console.log("minute");
+//       console.log("minute")
 
 //       return true;
 //     } catch (error) {
