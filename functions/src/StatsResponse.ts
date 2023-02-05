@@ -1,5 +1,7 @@
 export interface StatsResponse {
   videoId: string;
+
+  // metrics
   views: number;
   annotationClickThroughRate: number;
   annotationCloseRate: number;

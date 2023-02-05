@@ -22,6 +22,8 @@ import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
   ACTION_CARD_CLASSNAMES,
 } from "../theme";
+import Searchbar from "./Searchbar";
+import { debounce } from "../utils/debounce";
 
 interface Props {}
 
@@ -91,7 +93,9 @@ const defaultValues: FormValues = {
 
 const CreateTest = ({}: Props) => {
   const [selectedUpload, setSelectedUpload] = useState<MyUpload>();
-  const [uploads, setUploads] = useState<MyUpload[] | null>(null);
+  const [uploads, setUploads] = useState<MyUpload[]>([]);
+  const [filteredUploads, setFilteredUploads] = useState<MyUpload[]>([]);
+
   const params = useParams();
   const [fileUploads, setFileUploads] = useState<UploadedFile[]>([]);
 
@@ -119,6 +123,24 @@ const CreateTest = ({}: Props) => {
   const durationWatch = watch(FormNames.VIDEO_ID);
 
   const navigate = useNavigate();
+
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (query: string) => {
+    setSearch(query);
+    console.log("query", query);
+
+    const searchDebounce = debounce((query) => {
+      if (query) {
+        const filtered = [...uploads].filter(
+          (upload) =>
+            upload.title.includes(query) || upload.videoId.includes(query)
+        );
+        setFilteredUploads(filtered);
+      } else setFilteredUploads(uploads);
+    }, 1000);
+    searchDebounce(query);
+  };
 
   const onSubmit: SubmitHandler<FormValues> = async (input) => {
     const originalThumbUrl = uploads?.find(
@@ -154,6 +176,7 @@ const CreateTest = ({}: Props) => {
       const result = await getVidList(channelId);
       const myUploads = result;
       setUploads(myUploads);
+      setFilteredUploads(myUploads);
     };
 
     if (channelId) handleList();
@@ -180,7 +203,7 @@ const CreateTest = ({}: Props) => {
           </div>
 
           <div className="grid grid-cols-5 gap-2">
-            {uploads?.map((upload, index) => {
+            {filteredUploads?.slice(0, 5).map((upload, index) => {
               const selectedClass =
                 selectedUpload?.videoId === upload.videoId
                   ? "bg-primary-50"
@@ -229,6 +252,8 @@ const CreateTest = ({}: Props) => {
             })}
           </div>
         </div>
+
+        <Searchbar query={search} onChange={handleSearch} />
 
         {/* section 2 */}
         <div data-section="2" className="mt-4">
