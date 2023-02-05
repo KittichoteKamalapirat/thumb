@@ -4,7 +4,6 @@ import Container from "../containers/Container";
 import { Footer } from "../Footer";
 import LoggedInNav from "../navbars/LoggedInNav";
 import LoggedOutNav from "../navbars/LoggedOutNav";
-import Navbar from "../navbars/Navbar2";
 
 interface Props {
   children: ReactNode;

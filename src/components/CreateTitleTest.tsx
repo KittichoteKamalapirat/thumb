@@ -25,6 +25,7 @@ import { InputType } from "./forms/TextField/inputType";
 import SubHeading from "./typography/SubHeading";
 import { urlResolver } from "../lib/UrlResolver";
 import { createTesting } from "../firebase/createTesting";
+import { getVidList } from "../firebase/client";
 
 interface Props {}
 
@@ -166,15 +167,15 @@ const CreateTitleTest = ({}: Props) => {
     (durationTypeWatch === "stats_significant" ||
       (durationTypeWatch === "specific" && durationWatch));
 
-  // useEffect(() => {
-  //   const handleList = async () => {
-  //     const result = await getVidList(channelId);
-  //     const myUploads = result.data as MyUpload[];
-  //     setUploads(myUploads);
-  //   };
+  useEffect(() => {
+    const handleList = async () => {
+      const result = await getVidList(channelId);
+      const myUploads = result;
+      setUploads(myUploads);
+    };
 
-  //   if (channelId) handleList();
-  // }, [channelId]);
+    if (channelId) handleList();
+  }, [channelId]);
 
   useEffect(() => {
     if (!selectedVideo) return;
@@ -378,14 +379,14 @@ const CreateTitleTest = ({}: Props) => {
                     <div className="flex items-center gap-2 mb-4">
                       <label
                         htmlFor={`${FormNames.VARI_TITLE}.${index}.value`}
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        className="block mb-2 text-sm font-medium text-gray-900 "
                       >
                         {index + 1}.
                       </label>
                       <input
                         type="text"
                         id={`${FormNames.VARI_TITLE}.${index}.value`}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                         placeholder="John"
                         required
                         {...register(`${FormNames.VARI_TITLE}.${index}.value`)}

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Button from "../components/Buttons/Button";
 import LabelAndData from "../components/LabelAndData";
 import Layout from "../components/layouts/Layout";
@@ -11,13 +11,11 @@ const MyAccount = ({}: Props) => {
   const { channel, setChannel } = useContext(ChannelContext);
 
   const handleLogout = async () => {
-    console.log("1");
-    // const result = await googleLogout(channel.channelId);
-    console.log("2");
+    const result = await googleLogout(channel.channelId);
+    console.log("result", result);
+
     localStorage.clear();
-    console.log("3");
     setChannel(emptyChannel);
-    console.log("4");
   };
 
   return (

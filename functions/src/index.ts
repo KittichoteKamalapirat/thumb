@@ -16,5 +16,5 @@ export * from "./upload-title";
 export * from "./upload-thumb";
 export * from "./get-vids";
 // export * from "./youtube";
-export * from "./cron";
+export * from "./cronTitle";
 export * from "./auth";

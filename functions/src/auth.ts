@@ -29,7 +29,7 @@ const getChannelId = async () => {
   return channelId;
 };
 
-export const createAndSaveTokensCall = functions.https // }) //   allowInvalidAppCheckToken: false, // .runWith({
+export const createAndSaveTokens = functions.https // }) //   allowInvalidAppCheckToken: false, // .runWith({
   .onCall(async (code: string) => {
     try {
       console.log("codeeeee 1", code);

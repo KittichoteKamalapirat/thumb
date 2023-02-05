@@ -8,7 +8,7 @@ import Layout from "../components/layouts/Layout";
 import PageHeading from "../components/typography/PageHeading";
 import { ChannelContext } from "../contexts/ChannelContext";
 import { firestore, getStatsOneVid } from "../firebase/client";
-import { ThumbnailTesting } from "../firebase/types/Testing.type";
+import { Testing } from "../firebase/types/Testing.type";
 
 import { primaryColor } from "../theme";
 import { StatsResponse } from "../types/StatsResponse";
@@ -73,7 +73,7 @@ const MyTesting = ({}: Props) => {
   const [summary, setSummary] = useState<SummaryItem[]>([]);
 
   const [result, setResult] = useState<StatsResponse>();
-  const [testing, setTesting] = useState<ThumbnailTesting | null>(null);
+  const [testing, setTesting] = useState<Testing | null>(null);
 
   const params = useParams();
 
@@ -95,7 +95,7 @@ const MyTesting = ({}: Props) => {
       // this.setData(data)
       console.log("snap", snap);
       console.log("snap data", snap.data());
-      const testing = snap.data() as ThumbnailTesting;
+      const testing = snap.data() as Testing;
       setTesting(testing);
     });
 
@@ -125,11 +125,10 @@ const MyTesting = ({}: Props) => {
       console.log("testing?.videoId", testing?.videoId);
 
       if (!testing || !channelId) return;
-      const result = (await getStatsOneVid(testing)) as { data: SummaryItem[] };
+      const summary = await getStatsOneVid(testing);
       console.log("resulttt", result);
 
-      const summary = result.data;
-
+      if (!summary) return; // TODO
       setSummary(summary);
     };
     console.log("handle summary 1 ");
@@ -166,8 +165,10 @@ const MyTesting = ({}: Props) => {
 
       {testing.type === "thumb" && (
         <div className="grid grid-cols-2 gap-2">
-          <img src={testing.originalThumbUrl} className="w-full col-span-1" />
-          <img src={testing.variationThumbUrl} className="w-full  col-span-1" />
+          <img src={testing.ori} className="w-full col-span-1" />
+          {testing.varis.map((vari) => (
+            <img src={vari.value} className="w-full  col-span-1" />
+          ))}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ChannelContext } from "../contexts/ChannelContext";
-import { createAndSaveTokensCall } from "../firebase/client";
+import { createAndSaveTokens } from "../firebase/client";
 
 const GOOGLE_AUTH_CODE_REGEX = new RegExp("(?<=code=)(.*)(?=&scope)");
 
@@ -16,9 +16,9 @@ export const useCreateAndSaveToken = () => {
 
     const createAndSaveTokenAsync = async () => {
       if (!code) return;
-      const result = await createAndSaveTokensCall(code);
+      const result = await createAndSaveTokens(code);
 
-      const { channelId } = result.data as { channelId: string };
+      const { channelId } = result;
 
       localStorage.setItem("channelId", channelId);
       const channel = { channelId };

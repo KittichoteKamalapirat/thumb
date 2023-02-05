@@ -1,17 +1,15 @@
 import dayjs from "dayjs";
 import { collection, onSnapshot } from "firebase/firestore";
-import { docs_v1 } from "googleapis";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HiOutlineExternalLink } from "react-icons/hi";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "../components/Buttons/Button";
 import LabelAndData from "../components/LabelAndData";
 import Layout from "../components/layouts/Layout";
-import { snapshotColumns } from "../components/SnapshotsTable/snapshotColumns";
 import PageHeading from "../components/typography/PageHeading";
 import { ChannelContext } from "../contexts/ChannelContext";
 import { firestore } from "../firebase/client";
-import { ThumbnailTesting } from "../firebase/types/Testing.type";
+import { Testing } from "../firebase/types/Testing.type";
 import { urlResolver } from "../lib/UrlResolver";
 import { primaryColor } from "../theme";
 
@@ -20,7 +18,7 @@ interface Props {}
 const Testings = ({}: Props) => {
   const { channel, setChannel } = useContext(ChannelContext);
 
-  const [testings, setTestings] = useState<ThumbnailTesting[]>([]);
+  const [testings, setTestings] = useState<Testing[]>([]);
 
   useEffect(() => {
     console.log("1");
@@ -37,7 +35,7 @@ const Testings = ({}: Props) => {
     const unsubscribe = onSnapshot(colRef, (snap) => {
       const testings = snap.docs.map((doc) => doc.data());
       console.log("testings", testings);
-      setTestings(testings as ThumbnailTesting[]);
+      setTestings(testings as Testing[]);
     });
 
     //remember to unsubscribe from your realtime listener on unmount or you will create a memory leak
@@ -81,16 +79,12 @@ const Testings = ({}: Props) => {
               data={dayjs(testing?.startDate).format("MMMM D, YYYY")}
             />
 
-            {testing.type === "thumbnail" && (
+            {testing.type === "thumb" && (
               <div className="grid grid-cols-2 gap-2">
-                <img
-                  src={testing.originalThumbUrl}
-                  className="w-full col-span-1"
-                />
-                <img
-                  src={testing.variationThumbUrl}
-                  className="w-full  col-span-1"
-                />
+                <img src={testing.ori} className="w-full col-span-1" />
+                {testing.varis.map((vari) => (
+                  <img src={vari.value} className="w-full  col-span-1" />
+                ))}
               </div>
             )}
           </Link>

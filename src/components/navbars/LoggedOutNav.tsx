@@ -21,7 +21,7 @@ const LoggedOutNav = () => {
 
     const result = await getAuthURLCall(null); // looks like I need a param, cannot be empty ()
     console.log(2);
-    const url = result.data as string;
+    const url = result;
     console.log(3);
     window.location.replace(url);
   };

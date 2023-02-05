@@ -25,7 +25,7 @@ import {
 
 interface Props {}
 
-interface MyUpload {
+export interface MyUpload {
   videoId: string;
   thumbnailUrl: string;
   title: string;
@@ -149,15 +149,15 @@ const CreateTest = ({}: Props) => {
     (durationTypeWatch === "stats_significant" ||
       (durationTypeWatch === "specific" && durationWatch));
 
-  // useEffect(() => {
-  //   const handleList = async () => {
-  //     const result = await getVidList(channelId);
-  //     const myUploads = result.data as MyUpload[];
-  //     setUploads(myUploads);
-  //   };
+  useEffect(() => {
+    const handleList = async () => {
+      const result = await getVidList(channelId);
+      const myUploads = result;
+      setUploads(myUploads);
+    };
 
-  //   if (channelId) handleList();
-  // }, [channelId]);
+    if (channelId) handleList();
+  }, [channelId]);
 
   useEffect(() => {
     setValue(FormNames.TYPE, "thumb");

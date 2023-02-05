@@ -4,7 +4,7 @@ import * as fs from "fs";
 import { google } from "googleapis";
 import * as readline from "readline";
 import { getOAuth2Client } from "./getOAuth2Client";
-import { ThumbnailTesting } from "./types";
+import { Testing } from "./types";
 
 const secretFileName = "client_secret.json";
 const tokenFileName = "client_oauth_token.json";
@@ -227,7 +227,7 @@ const storeToken = (token: string) => {
 export const scheduleCronJob = functions.firestore
   .document("channels/{channelId}/testings/{testingId}")
   .onCreate(async (snap, context) => {
-    const test = snap.data() as ThumbnailTesting;
+    const test = snap.data() as Testing;
     // const thumbUrl = test.variationThumbUrl;
     // const channelId = test.channelId;
     // can do context
