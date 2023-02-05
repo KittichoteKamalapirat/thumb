@@ -16,7 +16,7 @@ import {
 } from "../theme";
 
 const CreateTest = () => {
-  const [testType, setTestType] = useState<TestingType>("thumb");
+  const [testType, setTestType] = useState<TestingType>("title");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTestType(e.target.value as TestingType);

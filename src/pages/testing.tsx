@@ -12,24 +12,8 @@ import { ThumbnailTesting } from "../firebase/types/Testing.type";
 
 import { primaryColor } from "../theme";
 import { StatsResponse } from "../types/StatsResponse";
-import { calculateResult } from "../utils/calculateResult";
 
 interface Props {}
-
-interface TestHistory {
-  date: string; // "2023-01-15"
-  thumbUrl: string;
-}
-
-const testingsHistory: TestHistory[] = [
-  { date: "2023-01-01", thumbUrl: "aaa" },
-  { date: "2023-01-02", thumbUrl: "bbb" },
-  { date: "2023-01-03", thumbUrl: "ccc" },
-  { date: "2023-01-04", thumbUrl: "ddd" },
-  { date: "2023-01-05", thumbUrl: "aaa" },
-  { date: "2023-01-06", thumbUrl: "bbb" },
-  { date: "2023-01-07", thumbUrl: "ccc" },
-];
 
 export interface ResultForEachThumbnail {
   views: number;
@@ -60,24 +44,27 @@ const blank = {
   subscribersGained: 0,
   subscribersLost: 0,
 };
+
 export interface SummaryItem {
-  thumbUrl: string;
-  result: ResultForEachThumbnail;
+  subject: string;
+  videoId: string;
+  // metrics
+  views: number;
+  annotationClickThroughRate: number;
+  annotationCloseRate: number;
+  annotationClickableImpressions: number;
+  averageViewDuration: number;
+
+  comments: number;
+  dislikes: number;
+  estimatedMinutesWatched: number;
+  likes: number;
+  shares: number;
+
+  subscribersGained: number;
+  subscribersLost: number;
 }
-const summary: SummaryItem[] = [
-  {
-    thumbUrl: "aaa",
-    result: blank,
-  },
-  {
-    thumbUrl: "bbb",
-    result: blank,
-  },
-  {
-    thumbUrl: "ccc",
-    result: blank,
-  },
-];
+
 const MyTesting = ({}: Props) => {
   const { id } = useParams();
   const { channel, setChannel } = useContext(ChannelContext);
@@ -116,46 +103,40 @@ const MyTesting = ({}: Props) => {
     return () => unsubscribe();
   }, [id, channel.channelId]);
 
-  useEffect(() => {
-    if (!testing?.videoId || !channelId) return;
-    const handleStats = async () => {
-      const result = (await getStatsOneVid({
-        channelId,
-        videoId: testing?.videoId,
-        date: "2023-01-15",
-      })) as { data: StatsResponse };
-      console.log("resultttttt", result);
-      setResult(result.data);
-    };
+  // useEffect(() => {
+  //   if (!testing?.videoId || !channelId) return;
+  //   const handleStats = async () => {
+  //     const result = (await getStatsOneVid({
+  //       channelId,
+  //       // videoId: testing?.videoId,
+  //       testingId: testing.id,
+  //       date: "2023-01-15",
+  //     })) as { data: StatsResponse };
+  //     console.log("resultttttt", result);
+  //     setResult(result.data);
+  //   };
 
-    handleStats();
-  }, [testing?.videoId, channelId]);
+  //   handleStats();
+  // }, [testing?.videoId, channelId]);
 
   useEffect(() => {
     const handleSummary = async () => {
-      if (!testing?.videoId || !channelId) return;
-      const summary = await Promise.all(
-        testingsHistory.map(async (history) => {
-          const result = (await getStatsOneVid({
-            channelId,
-            videoId: testing?.videoId,
-            date: history.date,
-          })) as { data: StatsResponse };
-          const data = result.data;
+      console.log("channel id", channelId);
+      console.log("testing?.videoId", testing?.videoId);
 
-          return { thumbUrl: history.thumbUrl, result: data };
-        })
-      );
-      console.log("summary", summary);
+      if (!testing || !channelId) return;
+      const result = (await getStatsOneVid(testing)) as { data: SummaryItem[] };
+      console.log("resulttt", result);
 
-      const calculated = calculateResult(summary);
-      console.log("calculated", calculated);
-      setSummary(calculated);
+      const summary = result.data;
+
+      setSummary(summary);
     };
-    handleSummary();
+    console.log("handle summary 1 ");
 
-    console.log("summary", summary);
-  }, [testing?.videoId, channelId]);
+    handleSummary();
+    console.log("handle summary 2 ");
+  }, [testing, channelId]);
   if (!testing) return <div>no testing</div>;
 
   return (
@@ -183,7 +164,7 @@ const MyTesting = ({}: Props) => {
         data={dayjs(testing?.startDate).format("MMMM D, YYYY")}
       />
 
-      {testing.type === "thumbnail" && (
+      {testing.type === "thumb" && (
         <div className="grid grid-cols-2 gap-2">
           <img src={testing.originalThumbUrl} className="w-full col-span-1" />
           <img src={testing.variationThumbUrl} className="w-full  col-span-1" />
@@ -229,21 +210,17 @@ const MyTesting = ({}: Props) => {
 
         {summary.map((thumbResult) => (
           <div data-note="row" className="grid grid-cols-6">
-            <div className="col-span-1"> {thumbResult.thumbUrl}</div>
+            <div className="col-span-1"> {thumbResult.subject}</div>
             <div className="col-span-1">
-              {thumbResult.result.annotationClickThroughRate}
+              {thumbResult.annotationClickThroughRate}
             </div>
 
+            <div className="col-span-1">{thumbResult.averageViewDuration}</div>
             <div className="col-span-1">
-              {thumbResult.result.averageViewDuration}
+              {thumbResult.annotationClickableImpressions}
             </div>
-            <div className="col-span-1">
-              {thumbResult.result.annotationClickableImpressions}
-            </div>
-            <div className="col-span-1">
-              {thumbResult.result.subscribersGained}
-            </div>
-            <div className="col-span-1">{thumbResult.result.views}</div>
+            <div className="col-span-1">{thumbResult.subscribersGained}</div>
+            <div className="col-span-1">{thumbResult.views}</div>
           </div>
         ))}
       </div>

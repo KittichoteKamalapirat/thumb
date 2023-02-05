@@ -1,4 +1,4 @@
-export const formatDate = (d: Date) => {
+export const formatDateForGoogle = (d: Date) => {
   const currDate = d.getDate();
   const currMonth = d.getMonth() + 1; // Months are zero based
   const currYear = d.getFullYear();

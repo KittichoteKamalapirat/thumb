@@ -1,17 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
-import { Control, FieldError, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Control,
+  FieldError,
+  FieldErrorsImpl,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import Button, { HTMLButtonType } from "./Buttons/Button";
 import CardRadioField from "./forms/RadioField/CardRadioField";
 
 import { ChannelContext } from "../contexts/ChannelContext";
-import { getVidList } from "../firebase/client";
-import { createTesting } from "../firebase/createTesting";
 import { DurationType } from "../firebase/types/Testing.type";
-import { urlResolver } from "../lib/UrlResolver";
 import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
   ACTION_CARD_CLASSNAMES,
@@ -19,6 +23,8 @@ import {
 import TextField, { TextFieldTypes } from "./forms/TextField";
 import { InputType } from "./forms/TextField/inputType";
 import SubHeading from "./typography/SubHeading";
+import { urlResolver } from "../lib/UrlResolver";
+import { createTesting } from "../firebase/createTesting";
 
 interface Props {}
 
@@ -29,9 +35,15 @@ interface MyUpload {
 }
 // const oauth2Client = new google.auth.OAuth2(client, secret, redirect);
 
+const TitleSchema = z
+  .object({
+    value: z.string().min(1, "Title cannot be empty"),
+  })
+  .array();
+
 const StatsSignificantSchema = z.object({
   videoId: z.string().min(1, { message: "Please select a video" }),
-  variationTitle: z.string().min(1, { message: "A test title is required" }),
+  variationTitles: TitleSchema,
   originalTitle: z.string(),
   durationType: z.literal("stats_significant"),
   type: z.literal("title"),
@@ -39,7 +51,7 @@ const StatsSignificantSchema = z.object({
 
 const CertainDaysSchema = z.object({
   videoId: z.string().min(1, { message: "Please select a video" }),
-  variationTitle: z.string().min(1, { message: "A test title is required" }),
+  variationTitles: TitleSchema,
   durationType: z.literal("specific"),
   originalTitle: z.string(),
   duration: z.number(),
@@ -59,6 +71,8 @@ const FormSchema = z.discriminatedUnion("durationType", [
   CertainDaysSchema,
 ]);
 
+type StatsSignificantFormValues = z.infer<typeof StatsSignificantSchema>;
+type CertainDaysFormValues = z.infer<typeof CertainDaysSchema>;
 export type FormValues = z.infer<typeof FormSchema>;
 
 export type CreateTitleTestInput = FormValues;
@@ -67,7 +81,7 @@ enum FormNames {
   VIDEO_ID = "videoId",
   DURATION_TYPE = "durationType",
   DURATION = "duration",
-  VARI_TITLE = "variationTitle",
+  VARI_TITLE = "variationTitles",
   ORI_TITLE = "originalTitle",
   TYPE = "type",
   // TYPE = "type",
@@ -81,11 +95,11 @@ enum FormNames {
 // }
 
 const defaultValues: FormValues = {
-  [FormNames.VIDEO_ID]: "",
+  [FormNames.VIDEO_ID]: "PlT05VwzMlg",
   [FormNames.DURATION_TYPE]: "specific",
-  [FormNames.DURATION]: 7, // in days
-  [FormNames.VARI_TITLE]: "",
-  [FormNames.ORI_TITLE]: "",
+  [FormNames.DURATION]: 7, // in  days
+  [FormNames.VARI_TITLE]: [{ value: "" }],
+  [FormNames.ORI_TITLE]: "opriginal title",
   [FormNames.TYPE]: "title",
 };
 
@@ -105,19 +119,23 @@ const CreateTitleTest = ({}: Props) => {
     control,
     setValue,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<FormValues>({
     defaultValues,
     resolver: zodResolver(FormSchema),
-    shouldUnregister: true,
+    // shouldUnregister: true, // TODO uncomment
   });
 
+  const { fields, append, remove } = useFieldArray({
+    name: "variationTitles",
+    control,
+  });
   const durationTypeWatch = watch(FormNames.DURATION_TYPE);
   const videoIdWatch = watch(FormNames.VIDEO_ID);
   const selectedVideo = uploads?.find(
     (upload) => upload.videoId === videoIdWatch
   );
-  const durationWatch = watch(FormNames.VIDEO_ID);
+  const durationWatch = watch(FormNames.DURATION);
 
   const navigate = useNavigate();
 
@@ -141,21 +159,22 @@ const CreateTitleTest = ({}: Props) => {
   };
 
   console.log(errors);
+  console.log("duration watch", durationWatch);
 
   const isSubmittable =
     videoIdWatch &&
     (durationTypeWatch === "stats_significant" ||
       (durationTypeWatch === "specific" && durationWatch));
 
-  useEffect(() => {
-    const handleList = async () => {
-      const result = await getVidList(channelId);
-      const myUploads = result.data as MyUpload[];
-      setUploads(myUploads);
-    };
+  // useEffect(() => {
+  //   const handleList = async () => {
+  //     const result = await getVidList(channelId);
+  //     const myUploads = result.data as MyUpload[];
+  //     setUploads(myUploads);
+  //   };
 
-    if (channelId) handleList();
-  }, [channelId]);
+  //   if (channelId) handleList();
+  // }, [channelId]);
 
   useEffect(() => {
     if (!selectedVideo) return;
@@ -295,7 +314,11 @@ const CreateTitleTest = ({}: Props) => {
                       type={TextFieldTypes.OUTLINED}
                       extraClass="w-full"
                       labelClass="mt-4"
-                      error={errors[FormNames.DURATION as keyof typeof errors]}
+                      error={
+                        (errors as FieldErrorsImpl<CertainDaysFormValues>)[
+                          FormNames.DURATION
+                        ]
+                      }
                       validation={
                         durationTypeWatch === "specific"
                           ? {
@@ -340,23 +363,46 @@ const CreateTitleTest = ({}: Props) => {
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12 md:col-span-6 xl:col-span-4">
               <p className="font-bold mb-2">Original Title</p>
-              {selectedVideo ? selectedVideo?.title : "Please selected a video"}
+              {selectedVideo ? selectedVideo?.title : "Please select a video"}
             </div>
+
+            {/* right side */}
             <div
               className={classNames("col-span-12 md:col-span-6 xl:col-span-8")}
             >
               <p className="font-bold mb-2">Test Title</p>
-              <TextField
-                name={FormNames.VARI_TITLE}
-                control={control as unknown as Control}
-                containerClass="w-full sm:w-80"
-                placeholder="Insert a title to AB test"
-                inputType={InputType.Text}
-                type={TextFieldTypes.OUTLINED}
-                extraClass="w-full"
-                labelClass="mt-4"
-                error={errors[FormNames.VARI_TITLE as keyof typeof errors]}
-              />
+
+              {fields.map((field, index) => {
+                return (
+                  <div key={field.id}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <label
+                        htmlFor={`${FormNames.VARI_TITLE}.${index}.value`}
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        {index + 1}.
+                      </label>
+                      <input
+                        type="text"
+                        id={`${FormNames.VARI_TITLE}.${index}.value`}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="John"
+                        required
+                        {...register(`${FormNames.VARI_TITLE}.${index}.value`)}
+                      />
+                      <Button label="delete" onClick={() => remove(index)} />
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex justify-end">
+                <Button
+                  label="Add title"
+                  fontColor="text-grey-0"
+                  buttonType={HTMLButtonType.BUTTON}
+                  onClick={() => append({ value: "" })}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -366,7 +412,7 @@ const CreateTitleTest = ({}: Props) => {
             label="Create a test"
             fontColor="text-grey-0"
             buttonType={HTMLButtonType.SUBMIT}
-            disabled={!isSubmittable}
+            disabled={!isValid || isSubmitting}
           />
         </div>
       </form>

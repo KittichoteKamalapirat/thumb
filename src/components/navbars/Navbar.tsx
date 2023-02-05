@@ -1,12 +1,12 @@
 import { Suspense, useContext } from "react";
-import { brandName } from "../constants";
-import { ChannelContext } from "../contexts/ChannelContext";
+import { brandName } from "../../constants";
+import { ChannelContext } from "../../contexts/ChannelContext";
 
-import AuthDisplay from "./AuthDisplay";
+import AuthDisplay from "../AuthDisplay";
 
-import { ButtonTypes } from "./Buttons/Button";
-import LinkButton from "./Buttons/LinkButton";
-import { Loading } from "./skeletons/Loading";
+import { ButtonTypes } from "../Buttons/Button";
+import LinkButton from "../Buttons/LinkButton";
+import { Loading } from "../skeletons/Loading";
 
 interface Props {}
 

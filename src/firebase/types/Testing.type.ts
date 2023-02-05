@@ -30,7 +30,7 @@ export interface ThumbUploadHistory {
 }
 
 export interface TitleUploadHistory {
-  date: string; // see YOUTUBE_DATA_API_DATE_FORMAT
+  date: string; // iso date => but how to convert when call api
   title: string;
 }
 

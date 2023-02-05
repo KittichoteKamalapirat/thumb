@@ -19,6 +19,7 @@ export const createTesting = async (
       status: "ongoing",
       channelId,
       createdAt: new Date().toISOString(),
+      history: [],
       ...input,
     };
 

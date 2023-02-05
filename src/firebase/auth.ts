@@ -5,6 +5,7 @@ import { auth, firestore, functions } from "./client";
 
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/youtube.upload");
+provider.setCustomParameters({});
 
 export const signInWithGoogle = async () => {
   try {
