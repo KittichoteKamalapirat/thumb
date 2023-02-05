@@ -8,11 +8,6 @@ import Button, { HTMLButtonType } from "./Buttons/Button";
 import DropzoneField, { UploadedFile } from "./DropzoneField";
 import CardRadioField from "./forms/RadioField/CardRadioField";
 
-import TextField, { TextFieldTypes } from "./forms/TextField";
-import { InputType } from "./forms/TextField/inputType";
-import Layout from "./layouts/Layout";
-import PageHeading from "./typography/PageHeading";
-import SubHeading from "./typography/SubHeading";
 import { ChannelContext } from "../contexts/ChannelContext";
 import { getVidList } from "../firebase/client";
 import { createTesting } from "../firebase/createTesting";
@@ -22,8 +17,11 @@ import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
   ACTION_CARD_CLASSNAMES,
 } from "../theme";
-import Searchbar from "./Searchbar";
 import { debounce } from "../utils/debounce";
+import TextField, { TextFieldTypes } from "./forms/TextField";
+import { InputType } from "./forms/TextField/inputType";
+import Searchbar from "./Searchbar";
+import SubHeading from "./typography/SubHeading";
 
 interface Props {}
 
@@ -117,7 +115,6 @@ const CreateTest = ({}: Props) => {
     shouldUnregister: true,
   });
 
-  console.log("errors", errors);
   const durationTypeWatch = watch(FormNames.DURATION_TYPE);
   const videoIdWatch = watch(FormNames.VIDEO_ID);
   const durationWatch = watch(FormNames.VIDEO_ID);
@@ -128,7 +125,6 @@ const CreateTest = ({}: Props) => {
 
   const handleSearch = (query: string) => {
     setSearch(query);
-    console.log("query", query);
 
     const searchDebounce = debounce((query) => {
       if (query) {

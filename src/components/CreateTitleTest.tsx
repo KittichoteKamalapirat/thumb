@@ -15,17 +15,19 @@ import Button, { HTMLButtonType } from "./Buttons/Button";
 import CardRadioField from "./forms/RadioField/CardRadioField";
 
 import { ChannelContext } from "../contexts/ChannelContext";
+import { getVidList } from "../firebase/client";
+import { createTesting } from "../firebase/createTesting";
 import { DurationType } from "../firebase/types/Testing.type";
+import { urlResolver } from "../lib/UrlResolver";
 import {
   ACTION_ACTIVE_CARD_CLASSNAMES,
   ACTION_CARD_CLASSNAMES,
 } from "../theme";
+import { debounce } from "../utils/debounce";
 import TextField, { TextFieldTypes } from "./forms/TextField";
 import { InputType } from "./forms/TextField/inputType";
+import Searchbar from "./Searchbar";
 import SubHeading from "./typography/SubHeading";
-import { urlResolver } from "../lib/UrlResolver";
-import { createTesting } from "../firebase/createTesting";
-import { getVidList } from "../firebase/client";
 
 interface Props {}
 
@@ -106,12 +108,30 @@ const defaultValues: FormValues = {
 
 const CreateTitleTest = ({}: Props) => {
   // const [selectedUpload, setSelectedUpload] = useState<MyUpload>();
-  const [uploads, setUploads] = useState<MyUpload[] | null>(null);
+  const [uploads, setUploads] = useState<MyUpload[]>([]);
+  const [filteredUploads, setFilteredUploads] = useState<MyUpload[]>([]);
   const params = useParams();
 
   const { channel, setChannel } = useContext(ChannelContext);
   const channelId = channel.channelId;
   const location = useLocation();
+
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (query: string) => {
+    setSearch(query);
+
+    const searchDebounce = debounce((query) => {
+      if (query) {
+        const filtered = [...uploads].filter(
+          (upload) =>
+            upload.title.includes(query) || upload.videoId.includes(query)
+        );
+        setFilteredUploads(filtered);
+      } else setFilteredUploads(uploads);
+    }, 1000);
+    searchDebounce(query);
+  };
 
   const {
     register,
@@ -141,16 +161,11 @@ const CreateTitleTest = ({}: Props) => {
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<FormValues> = async (input) => {
-    console.log(1);
-
-    console.log(2);
     try {
       const docId = await createTesting(channelId, input);
-      console.log(3);
+
       if (docId) {
-        console.log(4);
         navigate(urlResolver.myTest(docId));
-        console.log(5);
       } else {
         console.log("......cannot create ");
       }
@@ -158,9 +173,6 @@ const CreateTitleTest = ({}: Props) => {
       console.log("error inside  catch", error);
     }
   };
-
-  console.log(errors);
-  console.log("duration watch", durationWatch);
 
   const isSubmittable =
     videoIdWatch &&
@@ -172,6 +184,7 @@ const CreateTitleTest = ({}: Props) => {
       const result = await getVidList(channelId);
       const myUploads = result;
       setUploads(myUploads);
+      setFilteredUploads(myUploads);
     };
 
     if (channelId) handleList();
@@ -203,7 +216,7 @@ const CreateTitleTest = ({}: Props) => {
           </div>
 
           <div className="grid grid-cols-5 gap-2">
-            {uploads?.map((upload, index) => {
+            {filteredUploads?.slice(0, 5).map((upload, index) => {
               const selectedClass =
                 selectedVideo?.videoId === upload.videoId
                   ? "bg-primary-50"
@@ -252,6 +265,8 @@ const CreateTitleTest = ({}: Props) => {
             })}
           </div>
         </div>
+
+        <Searchbar query={search} onChange={handleSearch} />
 
         {/* section 2 */}
         <div data-section="2" className="mt-4">
