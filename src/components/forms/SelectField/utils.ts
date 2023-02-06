@@ -6,7 +6,7 @@ type IsMulti = false;
 export const getStyles = (
   displayError: boolean
 ): StylesConfig<SelectOption, IsMulti> => {
-  const currentColor = displayError ? "#ef4444" : "#E4E7EB";
+  const currentColour = displayError ? "#ef4444" : "#E4E7EB";
 
   return {
     valueContainer: (provided) => ({
@@ -15,22 +15,23 @@ export const getStyles = (
     }),
     control: (provided) => ({
       ...provided,
-      borderColor: currentColor,
+      borderColor: currentColour,
       cursor: "pointer",
       appearance: "none",
       boxShadow: "none",
-      borderRadius: "0.25rem",
+      padding: "8px 6px 8px 0",
+      borderRadius: 10,
       fontSize: fontSizeMD,
+      background: "#F8FBFC",
       "&:focus": {
         outline: "none",
-        borderColor: currentColor,
+        borderColor: currentColour,
       },
       "&:hover": {
         outline: "none",
-        borderColor: currentColor,
+        borderColor: currentColour,
       },
       minHeight: "2rem",
-      height: "2rem",
     }),
     menu: (provided) => ({
       ...provided,
@@ -57,7 +58,6 @@ export const getStyles = (
     placeholder: (provided) => ({
       ...provided,
       color: "#8b8b8b",
-      fontSize: "10px",
       fontWeight: "300",
     }),
     input: (provided) => ({

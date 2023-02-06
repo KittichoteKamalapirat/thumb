@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import {
   Control,
-  FieldError,
   FieldErrorsImpl,
   SubmitHandler,
   useFieldArray,
@@ -12,7 +11,6 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import Button, { HTMLButtonType } from "./Buttons/Button";
-import CardRadioField from "./forms/RadioField/CardRadioField";
 
 import { ChannelContext } from "../contexts/ChannelContext";
 import { getVidList } from "../firebase/client";
@@ -28,6 +26,10 @@ import TextField, { TextFieldTypes } from "./forms/TextField";
 import { InputType } from "./forms/TextField/inputType";
 import Searchbar from "./Searchbar";
 import SubHeading from "./typography/SubHeading";
+import dayjs from "dayjs";
+import SelectField from "./forms/SelectField";
+import { discovery_v1 } from "googleapis";
+import { suggestNumTestDays } from "../utils/suggestNumTestDays";
 
 interface Props {}
 
@@ -268,109 +270,12 @@ const CreateTitleTest = ({}: Props) => {
 
         <Searchbar query={search} onChange={handleSearch} />
 
-        {/* section 2 */}
-        <div data-section="2" className="mt-4">
-          {/* select duration label */}
-          <div className="flex gap-2">
-            <SubHeading
-              heading="2. Select duration"
-              extraClass="text-left text-xl mb-4 font-bold"
-            />
-            <span className="align-sub text-xl text-red-500">*</span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <CardRadioField
-              {...register(FormNames.DURATION_TYPE, {
-                required: {
-                  value: true,
-                  message: "is required",
-                },
-              })}
-              watchedValue={durationTypeWatch}
-              labelClass="mt-4.5 mb-2"
-              value="stats_significant"
-              error={errors[FormNames.DURATION_TYPE] as FieldError}
-            >
-              <div className="flex item-start gap-2">
-                <div>
-                  <p className="font-bold">
-                    Run until Click Through Rate (CTR) is "Statistically
-                    Significant
-                  </p>
-                  <p className="mt-4">
-                    Statistical significance is a way to know if something
-                    happened because of a good reason or just by chance, like
-                    flipping a coin and getting heads or tails.
-                  </p>
-                </div>
-              </div>
-            </CardRadioField>
-
-            <CardRadioField
-              {...register(FormNames.DURATION_TYPE)}
-              watchedValue={durationTypeWatch}
-              labelClass="mt-4.5 mb-2"
-              value="specific"
-              error={errors[FormNames.DURATION_TYPE] as FieldError}
-            >
-              <div className="flex item-start gap-2">
-                <div>
-                  <p className="font-bold">A set number of days</p>
-
-                  {/* Select duration ends */}
-
-                  {durationTypeWatch === "specific" && (
-                    <TextField
-                      name={FormNames.DURATION}
-                      control={control as unknown as Control}
-                      containerClass="w-full sm:w-80"
-                      placeholder="15"
-                      inputType={InputType.Number}
-                      type={TextFieldTypes.OUTLINED}
-                      extraClass="w-full"
-                      labelClass="mt-4"
-                      error={
-                        (errors as FieldErrorsImpl<CertainDaysFormValues>)[
-                          FormNames.DURATION
-                        ]
-                      }
-                      validation={
-                        durationTypeWatch === "specific"
-                          ? {
-                              min: {
-                                value: 1,
-                                message: "cannot be 0",
-                              },
-                              max: {
-                                value: 100,
-                                message: "has to be less than 101",
-                              },
-                            }
-                          : {}
-                      }
-                    />
-                  )}
-                  <p className="mt-4">
-                    Test will complete on Tuesday, November 30, 2021
-                  </p>
-
-                  <p className="mt-4">
-                    Final results will be available on Thursday, December 2,
-                    2021 because Youtube Analytics are deolayed 48 hours
-                  </p>
-                </div>
-              </div>
-            </CardRadioField>
-          </div>
-        </div>
-
         {JSON.stringify(watch(), null, 2)}
-        {/* section 3 Select a thumbnail */}
-        <div data-section="3" className="mt-4">
+        {/* section 2 Select a thumbnail */}
+        <div data-section="2" className="mt-4">
           <div className="flex gap-2">
             <SubHeading
-              heading="3. What title do you want to test?"
+              heading="2. What title do you want to test?"
               extraClass="text-left text-xl mb-4 font-bold"
             />
             <span className="align-sub text-xl text-red-500">*</span>
@@ -418,6 +323,96 @@ const CreateTitleTest = ({}: Props) => {
                   buttonType={HTMLButtonType.BUTTON}
                   onClick={() => append({ value: "" })}
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* section 3 */}
+        <div data-section="3" className="mt-4">
+          {/* select duration label */}
+          <div className="flex gap-2">
+            <SubHeading
+              heading="3. How long would you like to test?"
+              extraClass="text-left text-xl mb-4 font-bold"
+            />
+            <span className="align-sub text-xl text-red-500">*</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex item-start gap-2">
+              <div>
+                <TextField
+                  name={FormNames.DURATION}
+                  control={control as unknown as Control}
+                  containerClass="w-full sm:w-80"
+                  placeholder="15"
+                  inputType={InputType.Number}
+                  type={TextFieldTypes.OUTLINED}
+                  extraClass="w-full"
+                  labelClass="mt-4"
+                  error={
+                    (errors as FieldErrorsImpl<CertainDaysFormValues>)[
+                      FormNames.DURATION
+                    ]
+                  }
+                  validation={
+                    durationTypeWatch === "specific"
+                      ? {
+                          min: {
+                            value: 1,
+                            message: "cannot be 0",
+                          },
+                          max: {
+                            value: 100,
+                            message: "has to be less than 101",
+                          },
+                        }
+                      : {}
+                  }
+                />
+
+                {fields.length > 0 && (
+                  <div>
+                    <p>
+                      Since you have {fields.length} titles to test. We
+                      recommend the following number of days.
+                    </p>
+
+                    <div className="flex gap-2">
+                      {suggestNumTestDays(fields.length).map((num) => (
+                        <div
+                          key={num}
+                          onClick={() => setValue(FormNames.DURATION, num)}
+                          className={classNames(
+                            "border w-20 text-center hover:cursor-pointer hover:bg-primary-50 px-2 py-1 rounded-md",
+                            num === durationWatch && "bg-primary-50"
+                          )}
+                        >
+                          {num}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <p className="mt-4">
+                  Test will complete on{" "}
+                  {dayjs()
+                    .add(durationWatch, "d")
+                    .format("dddd, MMMM DD, YYYY")}
+                </p>
+
+                <p className="mt-4">
+                  Final results will be available on
+                  <span>
+                    {" "}
+                    {dayjs()
+                      .add(durationWatch + 2, "d")
+                      .format("dddd, MMMM DD, YYYY")}{" "}
+                  </span>
+                  because Youtube Analytics are delayed 48 hours
+                </p>
               </div>
             </div>
           </div>

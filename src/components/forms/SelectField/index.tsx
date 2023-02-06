@@ -7,10 +7,10 @@ import {
   RegisterOptions,
 } from "react-hook-form";
 import Select from "react-select";
+import { getErrorMessage } from "../../../utils/getErrorMessage";
 import FormFieldLabel from "../FormFieldLabel";
 import FormHelperText from "../FormHelperText";
 
-import getErrorMessage from "../../../utils/getErrorMessage";
 import { getStyles } from "./utils";
 
 export interface SelectOption<T = string> {
