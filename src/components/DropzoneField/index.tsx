@@ -8,6 +8,7 @@ import Button, { ButtonTypes } from "../Buttons/Button";
 import IconButton from "../Buttons/IconButton";
 import FormFieldLabel from "../forms/FormFieldLabel";
 import FormHelperText from "../forms/FormHelperText";
+import FileUploads from "./FileUploads";
 
 import useUploadFiles from "./useUploadFiles";
 
@@ -147,7 +148,7 @@ const DropzoneField = ({
           {fileUploads.length ? (
             <div className="relative">
               {/* images uploaded */}
-              <img src={fileUploads[0].url} className="w-full rounded-xl" />
+              {/* <img src={fileUploads[0].url} className="w-full rounded-xl" />
               <IconButton
                 icon={<HiOutlineTrash size={ICON_SIZE + 10} color={grey0} />}
                 onClick={() =>
@@ -159,7 +160,21 @@ const DropzoneField = ({
                 }
                 label={`${fileUploads[0].name}-remove`}
                 className="z-10 absolute -top-5 -right-5 p-2 rounded-full bg-red-500 hover:bg-red-400 hover:cursor-pointer"
-              />
+              /> */}
+
+              {fileUploads.length ? (
+                <FileUploads
+                  files={fileUploads}
+                  isMultiple={isMultiple}
+                  onRemoval={onRemoval}
+                  showConfirmationOnDelete={showConfirmationOnDelete}
+                />
+              ) : null}
+              {uploadIsLoading ? (
+                <p className="mt-2.5 font-nunito font-thin text-11px text-grey-420">
+                  Loading...
+                </p>
+              ) : null}
             </div>
           ) : (
             <div>

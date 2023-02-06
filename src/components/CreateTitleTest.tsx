@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import Button, { HTMLButtonType } from "./Buttons/Button";
 
+import dayjs from "dayjs";
 import { ChannelContext } from "../contexts/ChannelContext";
 import { getVidList } from "../firebase/client";
 import { createTesting } from "../firebase/createTesting";
@@ -22,14 +23,11 @@ import {
   ACTION_CARD_CLASSNAMES,
 } from "../theme";
 import { debounce } from "../utils/debounce";
+import { suggestNumTestDays } from "../utils/suggestNumTestDays";
 import TextField, { TextFieldTypes } from "./forms/TextField";
 import { InputType } from "./forms/TextField/inputType";
 import Searchbar from "./Searchbar";
 import SubHeading from "./typography/SubHeading";
-import dayjs from "dayjs";
-import SelectField from "./forms/SelectField";
-import { discovery_v1 } from "googleapis";
-import { suggestNumTestDays } from "../utils/suggestNumTestDays";
 
 interface Props {}
 
@@ -46,38 +44,35 @@ const TitleSchema = z
   })
   .array();
 
-const StatsSignificantSchema = z.object({
+const SharedSchema = z.object({
   videoId: z.string().min(1, { message: "Please select a video" }),
-  variationTitles: TitleSchema,
-  originalTitle: z.string(),
-  durationType: z.literal("stats_significant"),
-  type: z.literal("title"),
-});
-
-const CertainDaysSchema = z.object({
-  videoId: z.string().min(1, { message: "Please select a video" }),
-  variationTitles: TitleSchema,
-  durationType: z.literal("specific"),
-  originalTitle: z.string(),
   duration: z.number(),
-  type: z.literal("title"),
+  durationType: z.literal("specific"),
+  ori: z.string(),
+});
+const CreateThumbTestSchema = SharedSchema.extend({
+  type: z.literal("thumb"),
 });
 
-const durationTypeOptions: { label: string; value: DurationType }[] = [
-  { label: "A set number of days", value: "specific" },
-  {
-    label: 'Run until click-through rate is "Statistically Significant"',
-    value: "stats_significant",
-  },
-];
+// const CreateThumbTestSpecificSchema = SharedSchema.extend({
+//   originalThumb: z.string(),
+//   durationType: z.literal("specific"),
+//   type: z.literal("thumb"),
+// });
+
+const CreateTitleTestSchema = SharedSchema.extend({
+  variationTitles: TitleSchema,
+  type: z.literal("title"),
+});
 
 const FormSchema = z.discriminatedUnion("durationType", [
-  StatsSignificantSchema,
-  CertainDaysSchema,
+  CreateThumbTestSchema,
+  CreateTitleTestSchema,
 ]);
 
-type StatsSignificantFormValues = z.infer<typeof StatsSignificantSchema>;
-type CertainDaysFormValues = z.infer<typeof CertainDaysSchema>;
+type CreateThumbTestFormValues = z.infer<typeof CreateThumbTestSchema>;
+type CreateTitleTestFormValues = z.infer<typeof CreateTitleTestSchema>;
+
 export type FormValues = z.infer<typeof FormSchema>;
 
 export type CreateTitleTestInput = FormValues;
@@ -87,7 +82,7 @@ enum FormNames {
   DURATION_TYPE = "durationType",
   DURATION = "duration",
   VARI_TITLE = "variationTitles",
-  ORI_TITLE = "originalTitle",
+  ORI = "ori", // could be thumb url or title
   TYPE = "type",
   // TYPE = "type",
 }
@@ -104,7 +99,7 @@ const defaultValues: FormValues = {
   [FormNames.DURATION_TYPE]: "specific",
   [FormNames.DURATION]: 7, // in  days
   [FormNames.VARI_TITLE]: [{ value: "" }],
-  [FormNames.ORI_TITLE]: "opriginal title",
+  [FormNames.ORI]: "original title or thumbnail url",
   [FormNames.TYPE]: "title",
 };
 
@@ -176,11 +171,6 @@ const CreateTitleTest = ({}: Props) => {
     }
   };
 
-  const isSubmittable =
-    videoIdWatch &&
-    (durationTypeWatch === "stats_significant" ||
-      (durationTypeWatch === "specific" && durationWatch));
-
   useEffect(() => {
     const handleList = async () => {
       const result = await getVidList(channelId);
@@ -194,7 +184,7 @@ const CreateTitleTest = ({}: Props) => {
 
   useEffect(() => {
     if (!selectedVideo) return;
-    setValue(FormNames.ORI_TITLE, selectedVideo?.title);
+    setValue(FormNames.ORI, selectedVideo?.title);
   }, [selectedVideo]);
 
   useEffect(() => {
@@ -351,11 +341,7 @@ const CreateTitleTest = ({}: Props) => {
                   type={TextFieldTypes.OUTLINED}
                   extraClass="w-full"
                   labelClass="mt-4"
-                  error={
-                    (errors as FieldErrorsImpl<CertainDaysFormValues>)[
-                      FormNames.DURATION
-                    ]
-                  }
+                  error={errors[FormNames.DURATION]}
                   validation={
                     durationTypeWatch === "specific"
                       ? {
@@ -398,20 +384,25 @@ const CreateTitleTest = ({}: Props) => {
 
                 <p className="mt-4">
                   Test will complete on{" "}
-                  {dayjs()
-                    .add(durationWatch, "d")
-                    .format("dddd, MMMM DD, YYYY")}
+                  <span className="font-bold">
+                    {" "}
+                    {dayjs()
+                      .add(durationWatch, "d")
+                      .format("dddd, MMMM DD, YYYY")}{" "}
+                  </span>
                 </p>
 
                 <p className="mt-4">
                   Final results will be available on
-                  <span>
+                  <span className="font-bold text-green-500">
                     {" "}
                     {dayjs()
                       .add(durationWatch + 2, "d")
                       .format("dddd, MMMM DD, YYYY")}{" "}
                   </span>
-                  because Youtube Analytics are delayed 48 hours
+                  because{" "}
+                  <span className="text-red-500">Youtube Analytics</span> are
+                  delayed 48 hours
                 </p>
               </div>
             </div>

@@ -19,7 +19,7 @@ function App() {
   // populate data
   useEffect(() => {
     const channelId = localStorage.getItem("channelId");
-    if (channelId) setChannel({ channelId });
+    if (channelId) setChannel({ ...channel, channelId });
   }, []);
   return (
     <div className="App">
